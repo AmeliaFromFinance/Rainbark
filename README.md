@@ -9,7 +9,7 @@ A browser extension for Twitch chat. Every message you send gets a new global ba
 | Browser | Get it from |
 |---|---|
 | Firefox | [Firefox Add-ons](FIREFOX_ADDONS_LINK) |
-| Chrome, Brave, Opera, Vivaldi, Arc | [Chrome Web Store](CHROME_WEB_STORE_LINK) |
+| Chrome, Brave, Opera, Vivaldi, Arc | [Chrome Web Store](https://chromewebstore.google.com/detail/jlofkdgmbeleekkegkiflmildahmhgdd) |
 
 Needs Firefox 140+ or a Chromium browser 121+.
 
