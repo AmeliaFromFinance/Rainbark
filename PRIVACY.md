@@ -1,6 +1,6 @@
 # Rainbark privacy policy
 
-*Last updated: 8 October 2026*
+*Last updated: 31 October 2026*
 
 Rainbark is a browser extension for Twitch chat. It has no servers of its own, no accounts, no analytics, no tracking and no ads. This page explains what it reads, what it keeps, and the one place it sends anything outside Twitch.
 
@@ -22,13 +22,13 @@ Rainbark sends nothing else, to anyone. It never sells or shares data, and never
 
 ## What Rainbark keeps
 
-Your settings stay in your browser: in Twitch's site storage and in the extension's own storage, so they survive Twitch's site data being cleared. They include your palette and badge choices, per-channel positions, your snippets, any text you've reworded, and the query hashes noted above. They don't include your sign-in token or anyone's pronouns.
+Your settings stay in your browser: in Twitch's site storage and in the extension's own storage, so they survive Twitch's site data being cleared. They include your palette and badge choices, per-channel positions, your snippets, a count of messages styled, and the query hashes noted above. They don't include your sign-in token or anyone's pronouns.
 
 **Copy diagnostics** puts a short report on your clipboard only when you click it. It includes the channel you're on, your browser version and Rainbark's recent activity, but no sign-in details and no usernames. It goes wherever you paste it, and nowhere else.
 
 ## Removing your data
 
-Uninstalling Rainbark removes its extension storage. Its settings in Twitch's site storage stay until you clear site data for twitch.tv (in your browser's settings, or from the site information menu beside the address bar). The panel's **Reset** and **Forget query hashes** buttons clear most settings without uninstalling.
+Uninstalling Rainbark removes its extension storage. Its settings in Twitch's site storage stay until you clear site data for twitch.tv (in your browser's settings, or from the site information menu beside the address bar). The **Reset** and **Forget stored hashes** buttons in the panel's Settings clear most settings without uninstalling.
 
 ## Contact
 

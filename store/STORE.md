@@ -1,10 +1,11 @@
 # Rainbark: store listing
 
-Everything the Chrome Web Store, Firefox Add-ons and Edge Add-ons forms ask for, ready to paste. Replace `YOUR-GITHUB-NAME` with your GitHub name first.
+Everything the Chrome Web Store, Firefox Add-ons and Edge Add-ons forms ask for, ready to paste.
 
 - **Package:** `./package.sh` → `dist/rainbark-<version>.zip` (the same zip for all three stores)
-- **Privacy policy URL:** `https://github.com/YOUR-GITHUB-NAME/rainbark/blob/main/PRIVACY.md`
-- **Website / support:** `https://github.com/YOUR-GITHUB-NAME/rainbark` and `…/rainbark/issues`
+- **Privacy policy URL:** `https://github.com/AmeliaFromFinance/Rainbark/blob/main/PRIVACY.md`
+- **Website:** `https://rainbark.sinist3r.lol`
+- **Support:** `https://github.com/AmeliaFromFinance/Rainbark/issues`
 - **Images:** this folder (see the table at the end)
 
 ## Listing text
@@ -23,6 +24,7 @@ Every message you send in Twitch chat gets a new global badge and a new name col
 COLORS
 - A rainbow wheel, pastel, sunset and other palettes, 36 pride flags, Twitch's 15 free colors, or your own list.
 - Each channel remembers where it is in the palette. Freeze a channel to keep one color there.
+- Go through the palette in order, or in random order.
 
 BADGES
 - Shuffled or in your own order. Switch badges off, star favorites so they come up more often, pin one badge to a channel, or give a channel its own set.
@@ -32,6 +34,7 @@ AND MORE
 - Pronouns from pr.alejo.io next to people's names, styled the way you like.
 - Chat shortcuts: type >color and it becomes your current hex code. Add your own snippets.
 - Alt+Shift+R opens the panel with quick Pause, Freeze and palette buttons.
+- Recent colors at a glance. Click one to copy its hex code.
 - Works in the creator dashboard's chat too.
 - English, Español, Français, Deutsch, Português, Русский and 日本語.
 
@@ -41,7 +44,7 @@ Open any Twitch channel while signed in. A paw button appears below the chat box
 Most palettes need Twitch Turbo or Prime, because Twitch only lets those accounts pick any color. The "Twitch free colors" palette works for everyone.
 
 PRIVACY
-No servers, no analytics, no ads. Badge and color changes go to Twitch exactly as Twitch's own menus send them. With pronouns on, chatters' usernames are sent to the pronouns API at api.pronouns.alejo.io. Settings stay in your browser.
+No servers, no analytics, no ads. Badge and color changes go to Twitch exactly as Twitch's own menus send them. With pronouns on, the usernames of people in chat are sent to the pronouns API at api.pronouns.alejo.io. Settings stay in your browser.
 
 Rainbark isn't made by or affiliated with Twitch.
 ```

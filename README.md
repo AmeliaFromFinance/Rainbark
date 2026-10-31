@@ -1,105 +1,108 @@
-# Rainbark 🐶
+# Rainbark
 
-A browser extension for Twitch chat. Every message you send gets a new global badge and a new name color.
+A browser extension for Twitch chat. Every message you send goes out with a new global badge and a new name color.
 
-![Rainbark's panel beside Twitch chat](store/screenshot-1.png)
+![Rainbark open beside Twitch chat](screenshots/hero.jpg)
+
+**Website:** [rainbark.sinist3r.lol](https://rainbark.sinist3r.lol)
 
 ## Install
 
 | Browser | Get it from |
 |---|---|
-| Firefox | [Firefox Add-ons](FIREFOX_ADDONS_LINK) |
-| Chrome, Brave, Opera, Vivaldi, Arc | [Chrome Web Store](CHROME_WEB_STORE_LINK) |
-| Microsoft Edge | [Edge Add-ons](EDGE_ADDONS_LINK) |
+| Firefox | [Firefox Add-ons](https://addons.mozilla.org/en-GB/firefox/addon/rainbark-for-twitch/) |
+| Chrome, Edge, Brave, Opera, Vivaldi, Arc | [Chrome Web Store](https://chromewebstore.google.com/detail/jlofkdgmbeleekkegkiflmildahmhgdd) |
 
 Needs Firefox 140+ or a Chromium browser 121+.
 
-Most palettes need Twitch Turbo or Prime, because Twitch only lets those accounts pick any color. The "Twitch free colors" palette works for everyone.
+Most palettes need Twitch Turbo or Prime, since Twitch only lets those accounts pick any color. The **Twitch free colors** palette works for everyone.
 
-## What it does
+## Gallery
 
-- **Colors:** a rainbow wheel, pastel, sunset and other palettes, 36 pride flags, Twitch's 15 free colors, or your own list. Each channel remembers where it is in the palette, and you can freeze a channel to keep one color there.
-- **Badges:** shuffled or in your own order. Switch badges off, star favorites so they come up more often, pin one badge to a channel, or give a channel its own set.
-- **How often:** on every message, every few messages, or no more than once every so many seconds.
-- **Pronouns:** people's pronouns from [pr.alejo.io](https://pr.alejo.io) next to their names, styled the way you like.
-- **Chat shortcuts:** type `>color` and it becomes your current hex code. `>help` lists the rest, and you can add your own snippets with extras like `{channel}`, `{time}` and `{pick:a|b|c}`.
-- **Keyboard shortcut:** <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> opens the panel with quick Pause, Freeze and palette buttons.
-- **Creator dashboard:** works in Stream Manager's chat too, with the same settings.
-- **Languages:** English, Español, Français, Deutsch, Português, Русский and 日本語, following Twitch's language. Any text can be reworded from the panel.
+| | | |
+|:-:|:-:|:-:|
+| ![Chat with a new color each message](screenshots/chat.png) | ![Main panel](screenshots/main.png) | ![Colors](screenshots/colors.png) |
+| Chat | Main panel | Colors |
+| ![Palettes and pride flags](screenshots/palettes.png) | ![Badges](screenshots/badges.png) | ![Chat shortcuts](screenshots/shortcuts.png) |
+| Palettes | Badges | Chat shortcuts |
+| ![Pronouns](screenshots/pronouns.png) | ![Settings](screenshots/settings.png) | ![Setup guide](screenshots/guide.png) |
+| Pronouns | Settings | Setup guide |
+
+## Features
+
+- **Colors:** rainbow wheel, pastel, sunset and more, 36 pride flags, Twitch free colors, or your own list. Go in order or at random.
+- **Badges:** shuffle or set an order. Turn badges off, star favorites, pin one to a channel, or give a channel its own set.
+- **Per channel:** each channel remembers its place in the palette. Freeze a channel to keep one color there.
+- **How often:** every message, every few messages, or at most once every so many seconds.
+- **Preview:** see your next message, the next color and your recent colors. Click a recent color to copy it.
+- **Pronouns:** tags from [pr.alejo.io](https://pr.alejo.io) next to names, styled your way.
+- **Chat shortcuts:** type `>color` to paste your current hex code. `>help` lists the rest. Add your own snippets with extras like `{channel}`, `{time}` and `{pick:a|b|c}`.
+- **Keyboard shortcut:** <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> opens the panel.
+- **Creator dashboard:** works in Stream Manager chat too.
+- **Languages:** English, Español, Français, Deutsch, Português, Русский and 日本語. Follows Twitch by default.
 
 ## Getting started
 
-A welcome page opens once after installing. Then open any Twitch channel while signed in: a paw button appears below the chat box, and a small card walks you through setup. Rainbark changes your badge and color with the same requests Twitch's own menus send, so it needs to see you do three things once:
+1. Open any Twitch channel while signed in.
+2. Click the paw button below the chat box.
+3. Follow the setup card. It asks you to open Chat Identity, pick any badge and pick any color, once.
 
-1. Open Chat Identity (click your badge at the left of the chat box).
-2. Pick any badge there.
-3. Pick any name color there.
+That's it. Send a message and watch it change.
 
-After that, send a message and watch it work. The panel's **Walkthrough** row has a short tour of everything else.
+Rainbark sends the same requests Twitch's own menus do, so it needs to see each of them once. If Twitch updates its site and one stops working, the setup card comes back with just that step. Your settings stay.
 
-**If Twitch changes something** and one of those requests stops working, the card comes back with only the step that needs doing again. Your settings stay as they are.
+### Good to know
 
-**To change the keyboard shortcut,** go to `about:addons` → gear menu → **Manage Extension Shortcuts** in Firefox, or `chrome://extensions/shortcuts` in Chromium.
-
-**If you also use Pronoun Tags,** Rainbark leaves pronouns to it. FrankerFaceZ's own Pronouns add-on can't be detected, so with both on you'd see two tags per name: turn one of them off.
-
-**Something not working?** Open the panel → **Query hashes** → **Copy diagnostics**, and paste the report into an [issue](../../issues). It includes the channel you're on and your browser version, but no sign-in details and nobody's names.
+- **Change the keyboard shortcut:** `about:addons` → gear → **Manage Extension Shortcuts** (Firefox), or `chrome://extensions/shortcuts` (Chromium).
+- **Using Pronoun Tags too?** Rainbark leaves pronouns to it. FrankerFaceZ's Pronouns add-on can't be detected, so turn one of them off.
+- **Something broken?** Open **Settings** → **Setup & diagnostics** → **Copy diagnostics** and paste it into an [issue](../../issues). It has no sign-in details or usernames.
 
 ## Privacy
 
-Rainbark has no servers, no analytics and no ads. Badge and color changes go to Twitch from the Twitch page, exactly as if you'd used Twitch's menus. With pronouns on, the usernames of people in chat are sent to the pronouns API at `api.pronouns.alejo.io` to look up their pronouns. Settings stay in your browser. The details are in [PRIVACY.md](PRIVACY.md).
+No servers, no analytics, no ads. Badge and color changes go straight to Twitch from the Twitch page. With pronouns on, usernames from chat are sent to `api.pronouns.alejo.io` to look up pronouns. Settings stay in your browser. Full details in [PRIVACY.md](PRIVACY.md).
 
 Rainbark isn't made by or affiliated with Twitch or pr.alejo.io.
 
-## Install from source
+## Development
 
-### Firefox
+### Load from source
 
-1. Go to `about:debugging#/runtime/this-firefox`.
-2. Click **Load Temporary Add-on…** and pick `manifest.json`.
+**Firefox:** go to `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** → pick `manifest.json`. It's removed when Firefox restarts.
 
-Firefox removes temporary add-ons when it restarts.
+**Chromium:** go to `chrome://extensions` → turn on **Developer mode** → **Load unpacked** → pick this folder.
 
-### Chrome, Edge and other Chromium browsers
-
-1. Go to `chrome://extensions` (`edge://extensions` in Edge).
-2. Turn on **Developer mode**.
-3. Click **Load unpacked** and pick this folder.
-
-### Making the zip for the stores
+### Build the store zip
 
 ```sh
 ./package.sh
 ```
 
-This writes `dist/rainbark-<version>.zip` with only the files the extension needs (no `store/` images or Markdown). The same zip goes to all three stores.
+Writes `dist/rainbark-<version>.zip` with only the files the extension needs. The same zip works for every store.
 
-## How it works
+### Files
 
-| File | Job |
+| File | What it does |
 |---|---|
-| `manifest.json` | Declares the extension for both browsers. It runs on `www.twitch.tv` and `dashboard.twitch.tv`, asks for the `storage` permission, and may reach the pronouns API. |
-| `page.js` | The panel, the color and badge rotation, chat shortcuts and the setup card. It runs inside the Twitch page itself (the "MAIN" world), because it has to see Twitch's requests and reach Twitch's chat box. |
-| `languages.js` | All of the panel's text: `TEXT_GROUPS` (English, grouped the way the Text view shows it) and `LANGUAGES` (the other six). |
-| `styles.js` | The panel's stylesheet, `STYLES`. |
-| `pronoun-look.js` | How pronoun tags look: the choices, the formatting, and the stylesheet both the panel's preview and the real tags use. |
-| `pronouns.js` | Finds names in chat and on About panels and puts the pronoun tags beside them. |
-| `bridge.js` | Runs beside `page.js` with access to extension APIs. Keeps a copy of your settings in extension storage, shares them between tabs, and passes on the toolbar button and keyboard shortcut. |
-| `background.js` | Opens the welcome page once after installing, handles the toolbar button and keyboard shortcut, and looks up pronouns (a few at a time, cached for an hour). A service worker in Chromium, an event page in Firefox. |
-| `welcome.html`, `welcome.css`, `welcome.js` | The welcome page. |
-| `_locales/` | The extension's description, the shortcut's name and the welcome page in each language. |
+| `manifest.json` | Extension manifest for both browsers. |
+| `page.js` | The panel, badge and color rotation, chat shortcuts and setup card. Runs inside the Twitch page so it can see Twitch's requests. |
+| `styles.js` | The panel stylesheet. |
+| `languages.js` | All panel text, in English and six translations. |
+| `pronoun-look.js` | Pronoun tag styles, shared by the panel preview and the real tags. |
+| `pronouns.js` | Finds names in chat and adds pronoun tags. |
+| `bridge.js` | Syncs settings to extension storage and between tabs. |
+| `background.js` | Welcome page, toolbar button, keyboard shortcut and pronoun lookups (cached for an hour). |
+| `welcome.*` | The page that opens after install. |
+| `_locales/` | Store description, shortcut name and welcome page text. |
 
-`languages.js`, `styles.js` and `pronoun-look.js` load just before `page.js` and hand it their parts through `window.__rainbarkParts`, which `page.js` removes once it has read them.
+The website lives on the [`gh-pages`](../../tree/gh-pages) branch.
 
-**Where settings live.** Settings are saved in Twitch's site storage in your browser, and a copy is kept in the extension's own storage. Each save is time-stamped and the newest one wins, so a change on the main site shows up on the dashboard and in other tabs. If Twitch's site storage comes up empty (you cleared site data, or your browser clears it on exit), the copy is restored and you don't have to set up again.
+Settings are saved in Twitch's site storage, with a copy in extension storage. The newest copy wins, so changes show up in every tab and on the dashboard. If Twitch's storage is cleared, the copy is restored.
 
-## Changing things
+### Making changes
 
-- **Text and languages:** `TEXT_GROUPS` and `LANGUAGES` in `languages.js`. A string a language leaves out is shown in English.
-- **Look of the panel:** `STYLES` in `styles.js`.
-- **Pronoun tag choices:** `DEFAULTS` and `CHOICES` in `pronoun-look.js`. A new choice also needs its option names in `languages.js`.
-- **Palettes:** `PALETTE_GROUPS` in `page.js`. Each palette is a list of hex colors plus a name in `TEXT_GROUPS`.
-- **Welcome page, shortcut name and store description:** `_locales/<language>/messages.json`.
-- **Version:** `version` in `manifest.json` and `VERSION` in `page.js`. Keep them the same, and raise both for every store upload.
+- **Text:** `TEXT_GROUPS` and `LANGUAGES` in `languages.js`. Missing translations fall back to English.
+- **Look:** `STYLES` in `styles.js`.
+- **Palettes:** `PALETTE_GROUPS` in `page.js`, plus a name in `languages.js`.
+- **Version:** `version` in `manifest.json` and `VERSION` in `page.js`. Keep them equal and raise both for each store upload.
 
-Keep the Firefox add-on ID (`rainbark@ame.owo` in `manifest.json`) the same forever: Firefox treats a new ID as a different add-on, so existing installs wouldn't update.
+Never change the Firefox add-on ID (`rainbark@ame.owo`). Firefox treats a new ID as a new add-on, so existing installs would stop updating.

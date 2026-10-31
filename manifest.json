@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Rainbark",
-  "version": "7.1.2",
+  "version": "8.0.0",
   "description": "__MSG_extDescription__",
   "default_locale": "en",
   "icons": {

@@ -15,7 +15,7 @@
    * Configuration
    * ========================================================================= */
 
-  const VERSION = '7.1.2';
+  const VERSION = '8.0.0';
 
   const HASH_KEYS = ['badges', 'selectBadge', 'updateColor'];
   const HASH_OPERATIONS = {
@@ -121,10 +121,10 @@
   const GEAR_SELECTOR  = 'button[data-a-target="chat-settings"]';
   const IDENTITY_BUTTON = 'button[data-a-target="chat-badge-carousel-badge-icon"]';   // your badge in the chat box; opens Chat Identity
 
-  const PANEL_WIDTH      = 320;
-  const PANEL_MAX_HEIGHT = 600;
+  const PANEL_WIDTH      = 344;
+  const PANEL_MAX_HEIGHT = 640;
   const PANEL_GAP        = 8;
-  const MAX_TEXT_LENGTH  = 1000;
+  const RECENT_LIMIT     = 8;      // colors kept in the panel's history row
 
   const RESERVED_PATHS = new Set(['videos', 'directory', 'settings', 'u', 'p', 'search', 'friends',
     'subscriptions', 'wallet', 'inventory', 'drops', 'popout', 'moderator', 'team', 'login', 'signup']);
@@ -137,7 +137,6 @@
 
   const DEFAULT_TEXT = {};
   for (const group of TEXT_GROUPS) Object.assign(DEFAULT_TEXT, group.strings);
-  const TEXT_KEYS = Object.keys(DEFAULT_TEXT);
 
   /* =========================================================================
    * Shared helpers
@@ -146,7 +145,7 @@
   // Everything logged is also kept (the last 80 lines) for "Copy diagnostics".
   const diagnostics = [];
   function log(...args) {
-    console.log('%c[Rainbark]', 'color:#a970ff;font-weight:bold', ...args);
+    console.log('%c[Rainbark]', 'color:#ffb3d1;font-weight:bold', ...args);
     const line = args.map(arg => (typeof arg === 'string' ? arg : arg instanceof Error ? `${arg.name}: ${arg.message}` : JSON.stringify(arg))).join(' ');
     diagnostics.push(`${new Date().toISOString().slice(11, 19)} ${line.slice(0, 300)}`);
     if (diagnostics.length > 80) diagnostics.shift();
@@ -233,12 +232,16 @@
   ICONS.down = [['path', { d: 'm12 15.6-5.8-5.8 1.4-1.4 4.4 4.4 4.4-4.4 1.4 1.4-5.8 5.8Z' }]];
   ICONS.grip = [['circle', { cx: '9', cy: '6.5', r: '1.6' }], ['circle', { cx: '15', cy: '6.5', r: '1.6' }], ['circle', { cx: '9', cy: '12', r: '1.6' }],
                 ['circle', { cx: '15', cy: '12', r: '1.6' }], ['circle', { cx: '9', cy: '17.5', r: '1.6' }], ['circle', { cx: '15', cy: '17.5', r: '1.6' }]];
+  ICONS.gear = [['circle', { ...STROKE, cx: '12', cy: '12', r: '3' }], ['path', { ...STROKE, d: 'M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.5 7.5 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.4 1 2-3.4Z' }]];
+  ICONS.keyboard = [['rect', { ...STROKE, x: '2.5', y: '6', width: '19', height: '12', rx: '2' }], ['path', { ...STROKE, d: 'M6.5 10h.01M10 10h.01M14 10h.01M17.5 10h.01M8 14h8' }]];
+  ICONS.plug = [['path', { ...STROKE, d: 'M9 3v5M15 3v5M6.5 8h11v3a5.5 5.5 0 0 1-11 0V8ZM12 16.5V21' }]];
+  ICONS.download = [['path', { ...STROKE, d: 'M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 19.5h14' }]];
+  ICONS.upload = [['path', { ...STROKE, d: 'M12 15.5v-11M7.5 9 12 4.5 16.5 9M5 19.5h14' }]];
+  ICONS.shuffle = [['path', { ...STROKE, d: 'M3.5 7h3.2c4.6 0 6 10 10.6 10h3.2M3.5 17h3.2c1.6 0 2.8-1.2 3.8-2.8M13.5 9.8c1-1.6 2.2-2.8 3.8-2.8h3.2M18 4.5 20.5 7 18 9.5M18 14.5l2.5 2.5-2.5 2.5' }]];
   ICONS.check = [['path', { d: 'M9.5 15.086 18.793 5.793l1.414 1.414L9.5 17.914l-5.707-5.707 1.414-1.414L9.5 15.086Z' }]];
-  const FLIP_IN_RTL = new Set(['back', 'forward', 'undo']);
 
   function icon(name, className) {
-    const classes = [className || 'rb-icon', FLIP_IN_RTL.has(name) ? 'rb-flip' : ''].filter(Boolean).join(' ');
-    const svg = createSvg('svg', { viewBox: '0 0 24 24', width: '20', height: '20', 'aria-hidden': 'true', focusable: 'false', class: classes });
+    const svg = createSvg('svg', { viewBox: '0 0 24 24', width: '20', height: '20', 'aria-hidden': 'true', focusable: 'false', class: className || 'rb-icon' });
     for (const [tag, attrs] of ICONS[name]) svg.append(createSvg(tag, attrs));
     return svg;
   }
@@ -253,29 +256,29 @@
   function pup(mood = 'happy') {
     const happy = mood === 'happy';
     const eyes = happy
-      ? [createSvg('circle', { cx: '24', cy: '31', r: '3.2', fill: '#18181b' }), createSvg('circle', { cx: '40', cy: '31', r: '3.2', fill: '#18181b' }),
+      ? [createSvg('circle', { cx: '24', cy: '31', r: '3.2', fill: '#2a1d26' }), createSvg('circle', { cx: '40', cy: '31', r: '3.2', fill: '#2a1d26' }),
          createSvg('circle', { cx: '25.1', cy: '29.9', r: '1', fill: '#fff' }), createSvg('circle', { cx: '41.1', cy: '29.9', r: '1', fill: '#fff' })]
-      : [createSvg('path', { d: 'M20.5 31.5q3.5 3 7 0M36.5 31.5q3.5 3 7 0', stroke: '#18181b', 'stroke-width': '2', fill: 'none', 'stroke-linecap': 'round' })];
+      : [createSvg('path', { d: 'M20.5 31.5q3.5 3 7 0M36.5 31.5q3.5 3 7 0', stroke: '#2a1d26', 'stroke-width': '2', fill: 'none', 'stroke-linecap': 'round' })];
     return createSvg('svg', { viewBox: '0 0 64 64', class: 'rb-pup', 'aria-hidden': 'true', focusable: 'false' },
-      createSvg('path', { d: 'M32 9c13 0 21 9.5 21 23 0 14-9.5 23-21 23S11 46 11 32C11 18.5 19 9 32 9Z', fill: '#e9ddff' }),
-      createSvg('ellipse', { cx: '41', cy: '30.5', rx: '6.2', ry: '6', fill: '#c7a6ff' }),
-      createSvg('path', { d: 'M19.5 11.5C9 9.5 3.5 21 6.5 33.5c1.4 5.6 7.6 5.4 9.2-.2l3.8-13.5c1.1-3.9 2.6-7.2 0-8.3Z', fill: '#9147ff' }),
-      createSvg('path', { d: 'M44.5 11.5C55 9.5 60.5 21 57.5 33.5c-1.4 5.6-7.6 5.4-9.2-.2l-3.8-13.5c-1.1-3.9-2.6-7.2 0-8.3Z', fill: '#9147ff' }),
+      createSvg('path', { d: 'M32 9c13 0 21 9.5 21 23 0 14-9.5 23-21 23S11 46 11 32C11 18.5 19 9 32 9Z', fill: '#ffe7f1' }),
+      createSvg('ellipse', { cx: '41', cy: '30.5', rx: '6.2', ry: '6', fill: '#ffc9de' }),
+      createSvg('path', { d: 'M19.5 11.5C9 9.5 3.5 21 6.5 33.5c1.4 5.6 7.6 5.4 9.2-.2l3.8-13.5c1.1-3.9 2.6-7.2 0-8.3Z', fill: '#f58ab6' }),
+      createSvg('path', { d: 'M44.5 11.5C55 9.5 60.5 21 57.5 33.5c-1.4 5.6-7.6 5.4-9.2-.2l-3.8-13.5c-1.1-3.9-2.6-7.2 0-8.3Z', fill: '#f58ab6' }),
       createSvg('ellipse', { cx: '32', cy: '42.5', rx: '10.5', ry: '7.5', fill: '#fff' }),
       createSvg('ellipse', { cx: '19.5', cy: '39.5', rx: '3', ry: '2', fill: '#ff7aa8', opacity: '.45' }),
       createSvg('ellipse', { cx: '44.5', cy: '39.5', rx: '3', ry: '2', fill: '#ff7aa8', opacity: '.45' }),
       ...eyes,
-      createSvg('path', { d: 'M28.6 37.6c0-1.3 1.6-2 3.4-2s3.4.7 3.4 2c0 1.4-1.9 2.9-3.4 2.9s-3.4-1.5-3.4-2.9Z', fill: '#18181b' }),
+      createSvg('path', { d: 'M28.6 37.6c0-1.3 1.6-2 3.4-2s3.4.7 3.4 2c0 1.4-1.9 2.9-3.4 2.9s-3.4-1.5-3.4-2.9Z', fill: '#2a1d26' }),
       happy ? createSvg('path', { d: 'M30.3 45.2h3.4v2.6a1.7 1.7 0 0 1-3.4 0Z', fill: '#ff7aa8' }) : null,
-      createSvg('path', { d: 'M32 40.5v2.6M28 43.6q2 2.1 4 0 2 2.1 4 0', stroke: '#18181b', 'stroke-width': '1.5', fill: 'none', 'stroke-linecap': 'round' }));
+      createSvg('path', { d: 'M32 40.5v2.6M28 43.6q2 2.1 4 0 2 2.1 4 0', stroke: '#2a1d26', 'stroke-width': '1.5', fill: 'none', 'stroke-linecap': 'round' }));
   }
 
   /* =========================================================================
    * Persistent state
    * ========================================================================= */
 
-  // base: a built-in language, or 'auto' to follow Twitch. strings: your own wording on top of it.
-  const defaultLang = () => ({ base: 'auto', name: '', dir: 'ltr', strings: {} });
+  // base: a built-in language, or 'auto' to follow Twitch.
+  const defaultLang = () => ({ base: 'auto' });
 
   // The built-in language matching Twitch's own (then the browser's), or English.
   function pageLanguage() {
@@ -306,6 +309,7 @@
     hashes: {},
     wheel: { ...WHEEL_DEFAULTS },
     palette: 'rainbow',
+    colorOrder: 'cycle',   // or 'random'
     blend: 0,
     customColors: [],
     snippets: [],
@@ -315,21 +319,12 @@
     timing: { ...TIMING_DEFAULTS },   // change every N messages, and no sooner than N seconds after the last change
     pronouns: { ...PRONOUN_LOOK.DEFAULTS },   // whether and how pronoun tags show (pronouns.js puts them in)
     lang: defaultLang(),
+    stats: { styled: 0 },  // messages that went out with a new badge or color
   });
 
-  // Keeps only known keys and non-empty text that differs from the built-in wording.
   function cleanLang(raw) {
     const clean = defaultLang();
-    if (!raw || typeof raw !== 'object') return clean;
-    if (raw.base !== 'auto' && Object.hasOwn(LANGUAGES, raw.base)) clean.base = raw.base;
-    if (typeof raw.name === 'string') clean.name = raw.name.trim().slice(0, 40);
-    if (raw.dir === 'rtl') clean.dir = 'rtl';
-    const code = resolveBase(clean.base);
-    const strings = isObject(raw.strings) ? raw.strings : {};
-    for (const key of TEXT_KEYS) {
-      const value = strings[key];
-      if (typeof value === 'string' && value.trim() && value !== languageText(code, key)) clean.strings[key] = value.slice(0, MAX_TEXT_LENGTH);
-    }
+    if (isObject(raw) && Object.hasOwn(LANGUAGES, raw.base)) clean.base = raw.base;
     return clean;
   }
 
@@ -403,6 +398,8 @@
     clean.badgeSets = cleanChannelMap(raw.badgeSets, ids => (Array.isArray(ids) ? cleanIds(ids) : null));
     clean.colorPos = cleanChannelMap(raw.colorPos, index => (Number.isInteger(index) && index >= 0 ? index : null));
     if (raw.badgeOrder === 'order') clean.badgeOrder = 'order';
+    if (raw.colorOrder === 'random') clean.colorOrder = 'random';
+    if (isObject(raw.stats) && Number.isInteger(raw.stats.styled) && raw.stats.styled > 0) clean.stats.styled = raw.stats.styled;
     if (typeof raw.lastBadge === 'string') clean.lastBadge = raw.lastBadge;
     if (isObject(raw.hashes)) for (const key of HASH_KEYS) if (typeof raw.hashes[key] === 'string' && raw.hashes[key]) clean.hashes[key] = raw.hashes[key];
     clean.setupComplete = clean.setupComplete || HASH_KEYS.every(key => clean.hashes[key]);
@@ -427,7 +424,7 @@
       box.setAttribute('role', 'alert');
       box.textContent = languageText(pageLanguage(), 'app.duplicate');
       box.style.cssText = 'position:fixed;z-index:2147483647;inset-inline-end:12px;bottom:60px;max-width:300px;padding:10px 12px;border-radius:6px;'
-        + 'background:#18181b;color:#efeff1;border:1px solid #ffd37a;font:13px/1.5 Inter,Roobert,Helvetica,Arial,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.4)';
+        + 'background:#16121a;color:#f7f0f5;border:1px solid #ffd68a;font:13px/1.5 Inter,Roobert,Helvetica,Arial,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.4)';
       box.addEventListener('click', () => box.remove());
       document.body.append(box);
     };
@@ -469,46 +466,21 @@
   let activeLanguage = resolveBase(state.lang.base);   // the built-in language in use
   function refreshLanguage() { activeLanguage = resolveBase(state.lang.base); }
 
-  // The built-in wording for a string, before any changes of your own.
-  const builtInText = key => languageText(activeLanguage, key);
-
-  function rawText(key) {
-    const custom = state.lang.strings[key];
-    return typeof custom === 'string' && custom.trim() ? custom : builtInText(key);
-  }
-
-  // Switches the built-in language and drops any of your changes that now just repeat it.
   function setBaseLanguage(base) {
-    state.lang.base = base === 'auto' || Object.hasOwn(LANGUAGES, base) ? base : 'auto';
+    state.lang.base = Object.hasOwn(LANGUAGES, base) ? base : 'auto';
     refreshLanguage();
-    for (const key in state.lang.strings) if (state.lang.strings[key] === builtInText(key)) delete state.lang.strings[key];
   }
 
   function t(key, vars) {
-    const text = rawText(key);
+    const text = languageText(activeLanguage, key);
     if (!vars) return text;
     return text.replace(/\{(\w+)\}/g, (match, name) => (name in vars ? String(vars[name]) : match));
   }
 
-  // Shortcut words come from the text table too, so they can be translated.
+  // Shortcut words are the same in every language.
   const SHORTCUT_IDS = ['color', 'reset', 'freeze', 'unfreeze', 'pause', 'unpause', 'help'];
-
-  // The word in effect for each shortcut. Unusable or clashing words fall back to the English originals,
-  // which never clash with each other.
-  function shortcutTokens() {
-    const tokens = {};
-    for (const id of SHORTCUT_IDS) {
-      const custom = rawText(`shortcut.${id}`).trim();
-      tokens[id] = isUsableToken(custom) ? custom : DEFAULT_TEXT[`shortcut.${id}`];
-    }
-    for (let pass = 0; pass < SHORTCUT_IDS.length; pass++) {
-      const clashing = SHORTCUT_IDS.filter(id => tokens[id] !== DEFAULT_TEXT[`shortcut.${id}`]
-        && SHORTCUT_IDS.some(other => other !== id && tokensClash(tokens[id], tokens[other])));
-      if (!clashing.length) break;
-      for (const id of clashing) tokens[id] = DEFAULT_TEXT[`shortcut.${id}`];
-    }
-    return tokens;
-  }
+  const SHORTCUT_TOKENS = Object.fromEntries(SHORTCUT_IDS.map(id => [id, DEFAULT_TEXT[`shortcut.${id}`]]));
+  const shortcutTokens = () => SHORTCUT_TOKENS;
 
   /* =========================================================================
    * GraphQL
@@ -635,6 +607,15 @@
   let activeColorChannel = null;
   let colorIndex = 0;
   let appliedColor = null; // your name color as far as Rainbark knows (set by it or by hand), shown in the toolbar paw
+  const recentColors = [];  // newest first, this visit only
+
+  function rememberColor(hex) {
+    if (!hex || recentColors[0] === hex) return;
+    const seen = recentColors.indexOf(hex);
+    if (seen >= 0) recentColors.splice(seen, 1);
+    recentColors.unshift(hex);
+    recentColors.length = Math.min(recentColors.length, RECENT_LIMIT);
+  }
 
   function channelColorIndex(login) {
     if (login && activeColorChannel === login) return colorIndex;
@@ -744,7 +725,7 @@
       }
       if (outcome === 'rejected') freeColorsRefused = true;
     }
-    if (outcome === 'ok') { log('color changed', appliedColor); noteSent({ color: appliedColor }); updateIndicator(true); }
+    if (outcome === 'ok') { log('color changed', appliedColor); rememberColor(appliedColor); noteSent({ color: appliedColor }); updateIndicator(true); }
     if (outcome === 'rejected') {
       updateIndicator();
       if (!refusalToastShown) {
@@ -781,10 +762,21 @@
   // never happened leaves the position where it was.
   // The new position is saved straight away, so nothing reading it while the request is on its way (a tab getting
   // focus back, say) puts the old color back on.
+  // The step after `from`: the next color, or in random order any other color.
+  function stepAfter(from) {
+    const length = colorSequence.length;
+    if (state.colorOrder !== 'random' || length < 3) return (from + 1) % length;
+    const jump = 1 + Math.floor(Math.random() * (length - 1));
+    return (from + jump) % length;
+  }
+
+  // What the next message in this channel will most likely get. Random order can't know, so it shows nothing.
+  const upcomingColor = login => (state.colorOrder === 'random' ? null : colorSequence[(channelColorIndex(login) + 1) % colorSequence.length]);
+
   async function advanceColor(login) {
     if (activeColorChannel !== login) loadColorPosition(login);
     const previousIndex = colorIndex;
-    const index = colorIndex = (colorIndex + 1) % colorSequence.length;
+    const index = colorIndex = stepAfter(colorIndex % colorSequence.length);
     state.colorPos[login] = index; saveState();
     const outcome = await setNameColor(colorSequence[index % colorSequence.length]);
     if (outcome === 'failed' && state.colorPos[login] === index) {
@@ -963,7 +955,6 @@
    *   >freeze    your color stops changing in this channel      (>unfreeze undoes it)
    *   >pause     badge and color changes stop everywhere        (>unpause undoes it)
    *   >help      opens the list of shortcuts
-   * Every word can be changed in Language & text.
    *
    * Twitch's chat box is a Slate editor: it keeps its own model of the message and sends
    * that, not the on-screen text. So edits go through Slate's editor (found via React's
@@ -1211,6 +1202,7 @@
     else if (state.badgeOn && due) changes.push(advanceBadge(login));
     if (due && state.colorOn && login && !isChannelFrozen(login)) changes.push(advanceColor(login));
     if (!changes.some(Boolean)) return null;
+    state.stats.styled++; saveState();
     return Promise.allSettled(changes).then(() => { changesDoneAt = Date.now(); });
   }
 
@@ -1281,6 +1273,7 @@
       if (free && state.freeFormat !== free.format) { state.freeFormat = free.format; saveState(); }
       if (free) freeColorsRefused = false;
       appliedColor = hex;
+      rememberColor(hex);
       noteSent({ color: hex });
       updateIndicator(true);
     }
@@ -1350,23 +1343,28 @@
   let badgeScope = null, badgeScopeChannel = null;   // Badges view: 'all' (your switches) or 'here' (this channel's own set)
   let shortcutKeys = '';       // the browser's keyboard shortcut for opening the panel, when the extension has one
   let snippetDraft = null;     // the snippet being edited: { index (-1 for a new one), trigger, text }
-  let textSearchText = '', textUnchangedOnly = false;
-  let textScrollGroup = null;  // group to jump to when Language & text opens next
-  let tokenEntrySyncs = [];    // refreshes every shortcut-word field's hint, since one word can clash with another
   let confirmReturnKey = null; // control to refocus after a confirm view closes
   let panelClearsChatBox = false; // true while the panel was opened from chat: it sits above the chat box, not over it
 
+  // live, paused, setup or off: what the header pill and the toolbar paw show.
+  function overallStatus() {
+    if (!hashesReady()) return 'setup';
+    if (state.paused) return 'paused';
+    return state.badgeOn || state.colorOn ? 'live' : 'off';
+  }
+
   function panelHeader(titleText, backTo) {
-    const close = iconButton('close', t('common.close'), () => closePanel(true), 'close');
+    const close = iconButton('close', t('common.close'), () => closePanel(true), 'close', 'rb-iconbtn--quiet');
     if (!backTo) {
+      const status = overallStatus();
       panel.append(createElement('div', { class: 'rb-head rb-head--brand' },
         createElement('div', { class: 'rb-brand' },
-          pawIcon(null, pawColors()),
-          createElement('h2', { class: 'rb-title', id: 'rb-title', text: titleText, title: titleText })),
+          createElement('span', { class: 'rb-brand-mark' }, pawIcon(null, pawColors())),
+          createElement('h2', { class: 'rb-title', id: 'rb-title', text: titleText, title: titleText }),
+          createElement('span', { class: `rb-status rb-status--${status}`, role: 'status', text: t(`status.${status}`) })),
         close));
       return;
     }
-    if (backTo === 'main' && tourVisit === currentView) backTo = 'tour';   // opened from the walkthrough: Back returns to it
     panel.append(createElement('div', { class: 'rb-head' },
       iconButton('back', t('common.back'), () => setView(backTo, -1), 'back'),
       createElement('h2', { class: 'rb-title', id: 'rb-title', text: titleText, title: titleText }),
@@ -1387,7 +1385,8 @@
   }
 
   const sectionLabel = text => createElement('div', { class: 'rb-section', text });
-  const divider      = ()   => createElement('div', { class: 'rb-divider', role: 'separator' });
+  // A card of rows with hairlines between them. Leaves out empty slots.
+  const group = (...rows) => append(createElement('div', { class: 'rb-group' }), ...rows);
   const note         = text => createElement('p', { class: 'rb-note', text });
 
   function labelBlock(mainText, subContent) {
@@ -1409,9 +1408,9 @@
       createElement('span', { class: 'rb-switch', 'aria-hidden': 'true' }));
   }
 
-  function navRow(iconName, label, meta, targetView) {
-    return createElement('button', { type: 'button', class: 'rb-row', 'data-rb-key': `nav:${targetView}`, onclick: () => setView(targetView, 1) },
-      createElement('span', { class: 'rb-lead' }, icon(iconName, 'rb-icon rb-lead-icon'), labelBlock(label)),
+  function navRow(iconName, label, meta, targetView, sub) {
+    return createElement('button', { type: 'button', class: 'rb-row rb-nav', 'data-rb-key': `nav:${targetView}`, onclick: () => setView(targetView, 1) },
+      createElement('span', { class: 'rb-lead' }, createElement('span', { class: 'rb-lead-tile' }, icon(iconName, 'rb-icon rb-lead-icon')), labelBlock(label, sub)),
       createElement('span', { class: 'rb-meta' },
         typeof meta === 'string' ? createElement('span', { class: 'rb-meta-text', text: meta, title: meta }) : meta,
         icon('forward')));
@@ -1589,13 +1588,13 @@
     state = newState;
     if (stamp) saveState(); else writeLocal();
     badgeBags.clear(); buildColorSequence(); refreshLanguage();
-    applyDirection(); refreshEntryLabels(); renderPanel(); renderGuide(); updateIndicator();
+    refreshEntryLabels(); renderPanel(); renderGuide(); updateIndicator();
     if (prime) { primeChannelColor(currentChannel()); primeChannelBadge(currentChannel()); }
   }
 
   // Things learned in this browser, kept by Import and Reset: what Twitch's requests look like, how far the setup
   // and rotation got. Reset also keeps your own text, snippets and colors.
-  const KEPT_ON_IMPORT = ['freeFormat', 'guideDone', 'setupComplete', 'lastBadge'];
+  const KEPT_ON_IMPORT = ['freeFormat', 'guideDone', 'setupComplete', 'lastBadge', 'stats'];
   const KEPT_ON_RESET = [...KEPT_ON_IMPORT, 'hashes', 'lang', 'snippets', 'customColors'];
 
   // Also accepts settings files from Hueflux, which have the same shape minus the text.
@@ -1632,50 +1631,6 @@
     });
   }
 
-  // A translation file holds every string (translated or not), so a translator can work through it in any editor.
-  function exportText() {
-    const strings = {};
-    for (const key of TEXT_KEYS) strings[key] = rawText(key);
-    const language = state.lang.name || LANGUAGES[activeLanguage].name;
-    const file = { rainbark: 'text', version: 1, language, base: activeLanguage, direction: state.lang.dir, strings };
-    const slug = language.toLowerCase().normalize('NFKD').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '') || 'text';
-    downloadTextFile(`rainbark-text-${slug}.json`, JSON.stringify(file, null, 2));
-    showToast(t('toast.textExported'));
-  }
-
-  // Replaces all current text: strings the file leaves out go back to the built-in wording.
-  function importText(data) {
-    if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('not an object');
-    const strings = (data.strings && typeof data.strings === 'object') ? data.strings
-      : (data.lang && data.lang.strings && typeof data.lang.strings === 'object') ? data.lang.strings
-      : data;
-    const known = TEXT_KEYS.filter(key => typeof strings[key] === 'string' && strings[key].trim());
-    if (!known.length) throw new Error('no known strings');
-    const meta = data.lang && typeof data.lang === 'object' ? data.lang : data;
-    const base = Object.hasOwn(LANGUAGES, meta.base) ? meta.base : state.lang.base;
-    const fileName = typeof meta.language === 'string' ? meta.language : typeof meta.name === 'string' ? meta.name : state.lang.name;
-    state.lang = cleanLang({
-      base,
-      name: fileName === LANGUAGES[resolveBase(base)].name ? '' : fileName,
-      dir: meta.direction === 'rtl' || meta.dir === 'rtl' ? 'rtl' : (meta.direction === 'ltr' || meta.dir === 'ltr') ? 'ltr' : state.lang.dir,
-      strings,
-    });
-    refreshLanguage();
-    saveState(); applyDirection(); refreshEntryLabels(); renderPanel();
-    showToast(t('toast.textImported', { count: known.length }));
-  }
-
-  function confirmResetText() {
-    askConfirm({
-      title: t('confirm.text.title'), body: t('confirm.text.body'), action: t('confirm.text.action'),
-      onConfirm: () => {
-        state.lang = { ...defaultLang(), base: state.lang.base };
-        saveState(); applyDirection(); refreshEntryLabels();
-        showToast(t('toast.textReset'));
-      },
-    });
-  }
-
   /* =========================================================================
    * Views
    * ========================================================================= */
@@ -1692,10 +1647,28 @@
   // A chat line showing the badge and name color your next message will go out with.
   function messagePreview() {
     const badge = badgeById(currentBadgeId);
-    return createElement('div', { class: 'rb-preview', role: 'group', 'aria-label': t('preview.label'), title: t('preview.label') },
-      badge ? badgeImage(badge) : null,
-      createElement('span', { class: 'rb-preview-name', text: viewerName() || t('preview.you'), style: appliedColor ? { color: appliedColor } : null }),
-      `: ${t('preview.text')}`);
+    const login = currentChannel();
+    const next = login && !isChannelFrozen(login) && state.colorOn && !state.paused ? upcomingColor(login) : null;
+    const copyable = hex => createElement('button', {
+      type: 'button', class: 'rb-dot', style: { background: hex }, title: t('preview.copy', { color: hex }),
+      'aria-label': t('preview.copy', { color: hex }), 'data-rb-key': `copy:${hex}`, onclick: () => copyColor(hex),
+    });
+    return createElement('div', { class: 'rb-hero' },
+      createElement('div', { class: 'rb-hero-label' },
+        createElement('span', { text: t('preview.label') }),
+        next ? createElement('span', { class: 'rb-hero-next', title: t('preview.next') }, t('preview.next'), colorChip(next)) : null),
+      createElement('div', { class: 'rb-preview', role: 'group', 'aria-label': t('preview.label') },
+        badge ? badgeImage(badge) : null,
+        createElement('span', { class: 'rb-preview-name', text: viewerName() || t('preview.you'), style: appliedColor ? { color: appliedColor } : null }),
+        `: ${t('preview.text')}`),
+      recentColors.length ? createElement('div', { class: 'rb-recent', role: 'group', 'aria-label': t('preview.recent') },
+        createElement('span', { class: 'rb-recent-label', text: t('preview.recent') }),
+        createElement('span', { class: 'rb-recent-dots' }, recentColors.map(copyable))) : null);
+  }
+
+  async function copyColor(hex) {
+    try { await navigator.clipboard.writeText(hex); showToast(t('toast.copied', { color: hex })); }
+    catch (error) { showToast(t('toast.copyFailed'), 'error'); }
   }
 
   // Pause, freeze this channel and palette, one tap away (and first in line when the panel opens from the keyboard).
@@ -1716,7 +1689,6 @@
   }
 
   function renderMain() {
-    tourVisit = null;
     panelHeader(t('app.name'), null);
     const body = panelBody;
     body.append(messagePreview(), quickBar());
@@ -1724,51 +1696,78 @@
     if (state.paused) body.append(callout(t('paused.title'), t('paused.body'), textButton(t('paused.action'), 'text', () => setPaused(false), 'unpause'), 'paused'));
     if (!hashesReady()) body.append(setupCallout(t(repairing() ? 'guide.fix.title' : 'setup.title'), t('setup.action'), 'finish-setup'));
 
-    body.append(
+    body.append(sectionLabel(t('main.rotation')), group(
       toggleRow({
-        label: t('badge.label'), sub: t('badge.sub'),
+        label: t('badge.label'), sub: t('badge.sub'), leading: leadTile('medal'),
         checked: state.badgeOn, key: 'toggle:badge',
-        onChange: on => { state.badgeOn = on; saveState(); },
+        onChange: on => { state.badgeOn = on; saveState(); renderPanel(); updateIndicator(); },
       }),
       toggleRow({
-        label: t('color.label'), sub: t('color.sub'),
+        label: t('color.label'), sub: t('color.sub'), leading: leadTile('rainbow'),
         checked: state.colorOn, key: 'toggle:color',
-        onChange: on => { state.colorOn = on; saveState(); updateIndicator(); if (on) primeChannelColor(currentChannel()); },
-      }));
+        onChange: on => { state.colorOn = on; saveState(); renderPanel(); updateIndicator(); if (on) primeChannelColor(currentChannel()); },
+      })));
 
-    body.append(divider(), sectionLabel(t('channel.section')));
     const login = currentChannel();
+    body.append(sectionLabel(t('channel.section')));
     if (!login) {
-      body.append(note(t('channel.none')));
+      body.append(group(createElement('div', { class: 'rb-row rb-row--static' }, labelBlock(t('channel.none')))));
     } else {
       const frozen = isChannelFrozen(login);
       const sub = frozen
         ? createElement('span', { text: t('channel.frozen') })
         : [colorChip(channelColor(login)), createElement('span', { text: t('channel.cycling') })];
-      body.append(createElement('div', { class: 'rb-row rb-row--static' }, labelBlock(login, sub)));
-      if (!frozen) body.append(
-        textButton(t('channel.restart'), 'text', () => restartChannelColor(login), 'restart-color'));
+      body.append(group(createElement('div', { class: 'rb-row rb-row--static' },
+        createElement('span', { class: 'rb-lead' }, createElement('span', { class: 'rb-lead-tile rb-lead-tile--channel', text: login.slice(0, 1).toUpperCase() }), labelBlock(login, sub)),
+        frozen ? null : iconButton('undo', t('channel.restart'), () => restartChannelColor(login), 'restart-color', 'rb-iconbtn--quiet'))));
     }
 
-    const hashCount = capturedHashCount();
-    const hashMeta = t('common.count', { count: hashCount, total: HASH_KEYS.length });
-    body.append(divider(),
-      navRow('snowflake', t('nav.channels'), state.blacklist.length ? String(state.blacklist.length) : t('common.none'), 'channels'),
-      navRow('medal', t('nav.badges'), ownedBadges.length ? t('common.count', { count: enabledBadges().length, total: ownedBadges.length }) : '–', 'badges'),
-      navRow('rainbow', t('nav.wheel'), miniStrip(), 'wheel'),
-      navRow('clock', t('nav.timing'), timingMeta(), 'timing'),
-      navRow('prompt', t('nav.shortcuts'), t(state.shortcutOn ? 'common.on' : 'common.off'), 'shortcuts'),
-      navRow('bone', t('nav.hashes'), hashesReady() ? hashMeta : pill('wait', hashMeta), 'hashes'),
-      navRow('tag', t('nav.pronouns'), t(state.pronouns.on ? 'common.on' : 'common.off'), 'pronouns'),
-      navRow('globe', t('nav.text'), state.lang.name || LANGUAGES[activeLanguage].name, 'text'),
-      navRow('flag', t('nav.tour'), '', 'tour'));
+    body.append(sectionLabel(t('main.customize')), group(
+      navRow('rainbow', t('nav.wheel'), miniStrip(), 'wheel', paletteName(state.palette)),
+      navRow('medal', t('nav.badges'), ownedBadges.length ? t('common.count', { count: enabledBadges().length, total: ownedBadges.length }) : '–', 'badges', t('nav.badges.sub')),
+      navRow('clock', t('nav.timing'), '', 'timing', timingMeta()),
+      navRow('snowflake', t('nav.channels'), state.blacklist.length ? String(state.blacklist.length) : '', 'channels', t('nav.channels.sub'))));
 
-    body.append(divider(), createElement('div', { class: 'rb-footer' },
-      textButton(t('data.export'), 'secondary', exportSettings, 'export', null, t('data.exportTip')),
-      textButton(t('data.import'), 'secondary', () => pickJsonFile(importSettings, 'toast.importFailed'), 'import', null, t('data.importTip')),
-      textButton(t('data.reset'), 'secondary danger', confirmReset, 'reset', null, t('data.resetTip'))));
+    body.append(sectionLabel(t('main.chat')), group(
+      navRow('prompt', t('nav.shortcuts'), t(state.shortcutOn ? 'common.on' : 'common.off'), 'shortcuts', t('nav.shortcuts.sub')),
+      navRow('tag', t('nav.pronouns'), t(state.pronouns.on ? 'common.on' : 'common.off'), 'pronouns', t('nav.pronouns.sub'))));
 
-    body.append(createElement('div', { class: 'rb-credit' }, pawIcon(null, sampleColors(5)), t('app.credit', { version: VERSION })));
+    body.append(group(navRow('gear', t('nav.settings'), hashesReady() ? '' : pill('wait', t('status.setup')), 'settings', t('nav.settings.sub'))));
+
+    body.append(createElement('div', { class: 'rb-credit' },
+      createElement('span', { text: t('app.credit', { version: VERSION }) }),
+      state.stats.styled ? createElement('span', { text: t('app.stats', { count: state.stats.styled.toLocaleString() }) }) : null));
+  }
+
+  const leadTile = iconName => createElement('span', { class: 'rb-lead-tile' }, icon(iconName, 'rb-icon rb-lead-icon'));
+
+  function renderSettings() {
+    panelHeader(t('settings.title'), 'main');
+    const body = panelBody;
+
+    const languageSelect = createElement('select', { class: 'rb-input rb-select-inline', 'aria-label': t('settings.language'), 'data-rb-key': 'settings-language' },
+      createElement('option', { value: 'auto', text: t('settings.auto', { language: LANGUAGES[pageLanguage()].name }) }),
+      Object.keys(LANGUAGES).map(code => createElement('option', { value: code, text: LANGUAGES[code].name })));
+    languageSelect.value = state.lang.base;
+    languageSelect.addEventListener('change', () => { setBaseLanguage(languageSelect.value); saveState(); refreshEntryLabels(); renderPanel(); });
+
+    body.append(sectionLabel(t('settings.general')), group(
+      createElement('div', { class: 'rb-row rb-row--static rb-field-row' },
+        createElement('span', { class: 'rb-lead' }, leadTile('globe'), labelBlock(t('settings.language'))), languageSelect),
+      createElement('div', { class: 'rb-row rb-row--static' },
+        createElement('span', { class: 'rb-lead' }, leadTile('keyboard'), labelBlock(t('settings.shortcut'), t('settings.shortcutSub'))),
+        createElement('code', { class: 'rb-kbd', dir: 'ltr', text: shortcutKeys || t('settings.shortcutNone') }))));
+
+    body.append(sectionLabel(t('settings.setup')), group(
+      navRow('plug', t('nav.hashes'), hashesReady() ? pill('ok', t('hashes.ready')) : pill('wait', t('common.count', { count: capturedHashCount(), total: HASH_KEYS.length })), 'hashes', t('nav.hashes.sub'))));
+
+    body.append(sectionLabel(t('settings.backup')), note(t('settings.backupNote')),
+      createElement('div', { class: 'rb-footer' },
+        textButton(t('data.export'), 'secondary', exportSettings, 'export', 'download', t('data.exportTip')),
+        textButton(t('data.import'), 'secondary', () => pickJsonFile(importSettings, 'toast.importFailed'), 'import', 'upload', t('data.importTip'))));
+
+    body.append(sectionLabel(t('settings.reset')), note(t('data.resetTip')),
+      textButton(t('data.reset'), 'secondary danger block', confirmReset, 'reset'));
   }
 
   function renderChannels() {
@@ -1778,11 +1777,13 @@
 
     const login = currentChannel();
     if (login && !isChannelFrozen(login))
-      body.append(textButton(t('channels.freeze', { channel: login }), 'text block', () => toggleChannelBlacklist(login), 'freeze-current', 'plus'));
+      body.append(textButton(t('channels.freeze', { channel: login }), 'secondary block', () => toggleChannelBlacklist(login), 'freeze-current', 'plus'));
 
     if (!state.blacklist.length) { body.append(emptyState(t('channels.empty'), null, 'sleepy')); return; }
-    body.append(...state.blacklist.map(channelLogin => removableRow(labelBlock(channelLogin, channelLogin === login ? t('channels.here') : null),
-      t('channels.remove', { channel: channelLogin }), () => toggleChannelBlacklist(channelLogin), `remove:${channelLogin}`)));
+    body.append(sectionLabel(t('channels.title')), group(...state.blacklist.map(channelLogin => removableRow(
+      createElement('span', { class: 'rb-lead' }, createElement('span', { class: 'rb-lead-tile rb-lead-tile--channel', text: channelLogin.slice(0, 1).toUpperCase() }),
+        labelBlock(channelLogin, channelLogin === login ? t('channels.here') : null)),
+      t('channels.remove', { channel: channelLogin }), () => toggleChannelBlacklist(channelLogin), `remove:${channelLogin}`))));
   }
 
   function badgeImage(badge) {
@@ -1839,7 +1840,7 @@
         },
       }));
 
-    const list = createElement('div', { role: 'group', 'aria-label': t('badges.title') });
+    const list = createElement('div', { class: 'rb-group', role: 'group', 'aria-label': t('badges.title') });
     const fillList = () => {
       const query = normalize(badgeSearchText);
       const matches = orderedBadges().filter(badge => !query || badge.title.toLowerCase().includes(query) || badge.setID.includes(query));
@@ -1866,25 +1867,23 @@
 
     if (here)
       append(body, note(t(badgeSetFor(login) ? 'badges.set.note' : 'badges.set.none', { channel: login })),
-        badgeSetFor(login) ? textButton(t('badges.set.remove'), 'text', () => removeBadgeSet(login), 'remove-set') : null,
-        divider());
+        badgeSetFor(login) ? textButton(t('badges.set.remove'), 'text', () => removeBadgeSet(login), 'remove-set') : null);
 
     const sets = Object.entries(state.badgeSets);
     if (!here && sets.length)
       body.append(sectionLabel(t('badges.sets')), note(t('badges.setsNote')),
-        ...sets.map(([channel, ids]) => removableRow(
+        group(...sets.map(([channel, ids]) => removableRow(
           labelBlock(channel, t('common.count', { count: ownedBadges.filter(badge => ids.includes(normalize(badge.setID))).length, total: ownedBadges.length })),
-          t('badges.set.removeFor', { channel }), () => removeBadgeSet(channel), `unset:${channel}`)),
-        divider());
+          t('badges.set.removeFor', { channel }), () => removeBadgeSet(channel), `unset:${channel}`))));
     const pins = Object.entries(state.pinnedBadges);
     if (!here && pins.length)
       body.append(sectionLabel(t('badges.pinned')), note(t('badges.pinnedNote')),
-        ...pins.map(([channel, badgeId]) => {
+        group(...pins.map(([channel, badgeId]) => {
           const badge = badgeById(badgeId);
           return removableRow(createElement('span', { class: 'rb-lead' }, badgeImage(badge), labelBlock(channel, badge ? badge.title : t('badges.gone'))),
             t('badges.unpin', { channel }), () => setBadgePin(channel, null), `unpin:${channel}`);
-        }),
-        divider());
+        })));
+    if (!here && (sets.length || pins.length)) body.append(sectionLabel(t('badges.all')));
     body.append(list);
     fillList();
   }
@@ -1947,7 +1946,7 @@
     const body = panelBody;
     if (!ownedBadges.length) { body.append(emptyState(t('badges.loading'))); return; }
 
-    const list = createElement('div', { class: 'rb-sort-list', role: 'list' });
+    const list = createElement('div', { class: 'rb-group rb-sort-list', role: 'list' });
     const resetButton = textButton(t('badges.twitchOrder'), 'text', () => { state.badgeSequence = []; saveState(); renderPanel(); }, 'order-reset');
     const refresh = () => {
       const rows = [...list.children];
@@ -1980,7 +1979,7 @@
       list.append(row);
     }
     enableDragSort(list, commit);
-    body.append(note(t('badges.arrangeNote')), list, divider(), resetButton);
+    body.append(note(t('badges.arrangeNote')), list, resetButton);
     refresh();
   }
 
@@ -2040,26 +2039,25 @@
       PRONOUN_LOOK.CHOICES[key].map(value => [value, optionText(value)]), look[key], value => setPronounLook({ [key]: value }), extra);
 
     append(body,
-      toggleRow({ label: t('pronouns.on'), sub: t('pronouns.onSub'), checked: look.on, key: 'pn:on', onChange: on => setPronounLook({ on }) }),
-      document.querySelector('.pn-tag') ? createElement('p', { class: 'rb-note rb-note--warn', text: t('pronouns.conflict') }) : null,
-      pronounPreview);
+      pronounPreview,
+      group(toggleRow({ label: t('pronouns.on'), sub: t('pronouns.onSub'), checked: look.on, key: 'pn:on', onChange: on => setPronounLook({ on }) })),
+      document.querySelector('.pn-tag') ? createElement('p', { class: 'rb-note rb-note--warn', text: t('pronouns.conflict') }) : null);
     renderPronounPreview();
     if (look.on) body.append(
-      divider(), sectionLabel(t('pronouns.where')),
-      toggleRow({ label: t('pronouns.chat'), checked: look.chat, key: 'pn:chat', onChange: chat => setPronounLook({ chat }) }),
-      toggleRow({ label: t('pronouns.about'), checked: look.about, key: 'pn:about', onChange: about => setPronounLook({ about }) }),
-      divider(), sectionLabel(t('pronouns.look')),
-      choice('textCase', value => sample({ textCase: value, brackets: 'none' })),
-      choice('brackets', value => sample({ brackets: value })),
-      choice('separator', value => sample({ separator: value, brackets: 'none' })),
-      choice('color', value => t(`pronouns.color.${value}`), look.color === 'custom' ? colorPicker('customColor', t('pronouns.color')) : null),
-      choice('background', value => t(`pronouns.bg.${value}`), look.background === 'custom' ? colorPicker('customBackground', t('pronouns.background')) : null),
-      choice('shape', value => t(`pronouns.shape.${value}`)),
-      choice('size', value => t(`pronouns.size.${value}`)),
-      toggleRow({ label: t('pronouns.border'), checked: look.border, key: 'pn:border', onChange: border => setPronounLook({ border }, false) }),
-      toggleRow({ label: t('pronouns.bold'), checked: look.bold, key: 'pn:bold', onChange: bold => setPronounLook({ bold }, false) }),
-      divider(),
-      textButton(t('pronouns.reset'), 'secondary', () => setPronounLook({ ...PRONOUN_LOOK.DEFAULTS, on: look.on, chat: look.chat, about: look.about }), 'pn-reset'));
+      sectionLabel(t('pronouns.where')), group(
+        toggleRow({ label: t('pronouns.chat'), checked: look.chat, key: 'pn:chat', onChange: chat => setPronounLook({ chat }) }),
+        toggleRow({ label: t('pronouns.about'), checked: look.about, key: 'pn:about', onChange: about => setPronounLook({ about }) })),
+      sectionLabel(t('pronouns.look')), group(
+        choice('textCase', value => sample({ textCase: value, brackets: 'none' })),
+        choice('brackets', value => sample({ brackets: value })),
+        choice('separator', value => sample({ separator: value, brackets: 'none' })),
+        choice('color', value => t(`pronouns.color.${value}`), look.color === 'custom' ? colorPicker('customColor', t('pronouns.color')) : null),
+        choice('background', value => t(`pronouns.bg.${value}`), look.background === 'custom' ? colorPicker('customBackground', t('pronouns.background')) : null),
+        choice('shape', value => t(`pronouns.shape.${value}`)),
+        choice('size', value => t(`pronouns.size.${value}`)),
+        toggleRow({ label: t('pronouns.border'), checked: look.border, key: 'pn:border', onChange: border => setPronounLook({ border }, false) }),
+        toggleRow({ label: t('pronouns.bold'), checked: look.bold, key: 'pn:bold', onChange: bold => setPronounLook({ bold }, false) })),
+      textButton(t('pronouns.reset'), 'secondary block', () => setPronounLook({ ...PRONOUN_LOOK.DEFAULTS, on: look.on, chat: look.chat, about: look.about }), 'pn-reset'));
     body.append(note(t('pronouns.note')));
   }
 
@@ -2070,12 +2068,11 @@
   function renderTiming() {
     panelHeader(t('timing.title'), 'main');
     panelBody.append(note(t('timing.note')),
-      ...Object.keys(TIMING_DEFAULTS).map(key => sliderSetting({
+      group(...Object.keys(TIMING_DEFAULTS).map(key => sliderSetting({
         key, prefix: 'timing', min: TIMING_LIMITS[key][0], max: TIMING_LIMITS[key][1], value: state.timing[key], fallback: TIMING_DEFAULTS[key],
         onPreview: value => { state.timing[key] = value; }, onCommit: () => saveState(),
-      })),
-      divider(),
-      textButton(t('wheel.reset'), 'secondary', () => { state.timing = { ...TIMING_DEFAULTS }; saveState(); renderPanel(); }, 'timing-reset'));
+      }))),
+      textButton(t('wheel.reset'), 'secondary block', () => { state.timing = { ...TIMING_DEFAULTS }; saveState(); renderPanel(); }, 'timing-reset'));
   }
 
   function drawWheelPreview() {
@@ -2187,24 +2184,27 @@
     body.append(wheelPreviewHost);
     drawWheelPreview();
 
-    body.append(
-      createElement('button', { type: 'button', class: 'rb-row', 'data-rb-key': 'nav:palettes', onclick: () => setView('palettes', 1) },
-        createElement('span', { class: 'rb-lead' }, paletteFlag(state.palette), labelBlock(t('wheel.palette'))),
-        createElement('span', { class: 'rb-meta' },
-          createElement('span', { class: 'rb-meta-text', text: paletteName(state.palette), title: paletteName(state.palette) }),
-          icon('forward'))),
-      divider());
+    body.append(group(
+      createElement('button', { type: 'button', class: 'rb-row rb-nav', 'data-rb-key': 'nav:palettes', onclick: () => setView('palettes', 1) },
+        createElement('span', { class: 'rb-lead' }, paletteFlag(state.palette), labelBlock(t('wheel.palette'), paletteName(state.palette))),
+        createElement('span', { class: 'rb-meta' }, icon('forward'))),
+      toggleRow({
+        label: t('wheel.random'), sub: t('wheel.random.sub'), leading: leadTile('shuffle'),
+        checked: state.colorOrder === 'random', key: 'toggle:random',
+        onChange: on => { state.colorOrder = on ? 'random' : 'cycle'; saveState(); },
+      })));
 
     if (state.palette === 'rainbow') {
-      body.append(...Object.keys(WHEEL_DEFAULTS).map(wheelSetting));
-      body.append(divider(), textButton(t('wheel.reset'), 'secondary', () => {
+      body.append(sectionLabel(t('wheel.tune')), group(...Object.keys(WHEEL_DEFAULTS).map(wheelSetting)));
+      body.append(textButton(t('wheel.reset'), 'secondary block', () => {
         state.wheel = { ...WHEEL_DEFAULTS }; saveState(); rebuildColorWheel(); renderPanel();
       }, 'wheel-reset'));
     } else if (state.palette === 'twitch') {
       body.append(note(t('wheel.free.note')));
     } else {
-      if (state.palette === 'custom') body.append(customColorsEditor());
-      body.append(sliderSetting({ key: 'blend', min: 0, max: BLEND_MAX, value: state.blend, fallback: 0, onPreview: value => { state.blend = value; } }));
+      body.append(sectionLabel(t('wheel.tune')), group(
+        state.palette === 'custom' ? customColorsEditor() : null,
+        sliderSetting({ key: 'blend', min: 0, max: BLEND_MAX, value: state.blend, fallback: 0, onPreview: value => { state.blend = value; } })));
     }
   }
 
@@ -2222,13 +2222,14 @@
   function renderPalettes() {
     panelHeader(t('palettes.title'), 'wheel');
     const groups = [...PALETTE_GROUPS.map(group => ({ id: group.id, ids: Object.keys(group.palettes) })), { id: 'yours', ids: ['custom'] }];
+    const groupOf = group;   // `group` is shadowed below
     const list = createElement('div', { role: 'radiogroup', 'aria-label': t('palettes.title') });
     const fillList = () => {
       const query = normalize(paletteSearchText);
       const matches = id => !query || `${paletteName(id)} ${id} ${PALETTE_ALIASES[id] || ''}`.toLowerCase().includes(query);
       const sections = groups.flatMap(group => {
         const ids = group.ids.filter(matches);
-        return ids.length ? [sectionLabel(t(`palettes.group.${group.id}`)), ...ids.map(paletteRow)] : [];
+        return ids.length ? [sectionLabel(t(`palettes.group.${group.id}`)), groupOf(...ids.map(paletteRow))] : [];
       });
       list.replaceChildren(...(sections.length ? sections : [emptyState(t('palettes.noMatch', { query: paletteSearchText.trim() }))]));
     };
@@ -2248,7 +2249,7 @@
       `Rainbark ${VERSION} diagnostics, ${new Date().toISOString()}`,
       `Page: ${location.hostname} · channel ${currentChannel() || 'none'} · Twitch language ${document.documentElement.lang || '?'}`,
       `Browser: ${navigator.userAgent}`,
-      `Text: ${activeLanguage}${state.lang.base === 'auto' ? ' (following Twitch)' : ''}, ${Object.keys(state.lang.strings).length} changed, ${state.lang.dir}`,
+      `Language: ${activeLanguage}${state.lang.base === 'auto' ? ' (following Twitch)' : ''}`,
       `Signed in: ${yes(viewerName())} · request details captured: ${yes(credentialsReady())}`,
       `Query hashes: ${HASH_KEYS.map(key => `${key} ${state.hashes[key] ? state.hashes[key].slice(0, 8) : 'missing'}`).join(', ')} · setup complete before: ${yes(state.setupComplete)}`,
       `Chat box: ${yes(chatBox)} · Slate editor: ${yes(chatBox && slateEditorFor(chatBox))} · paw button: ${document.getElementById('rb-toolbtn') ? 'in the chat bar' : 'floating'}`,
@@ -2276,11 +2277,11 @@
   }
 
   function renderHashes() {
-    panelHeader(t('hashes.title'), 'main');
+    panelHeader(t('hashes.title'), 'settings');
     const body = panelBody;
     body.append(note(t('hashes.note')));
 
-    body.append(...HASH_KEYS.map(key => {
+    body.append(group(...HASH_KEYS.map(key => {
       const hash = state.hashes[key];
       const sub = hash
         ? createElement('span', { class: 'rb-mono', text: `${hash.slice(0, 12)}…`, dir: 'ltr' })
@@ -2288,14 +2289,14 @@
       return createElement('div', { class: 'rb-row rb-row--static rb-hash', title: HASH_OPERATIONS[key] },
         labelBlock(t(`hashes.${key}`), sub),
         hash ? pill('ok', t('hashes.fetched')) : pill('wait', t('hashes.waiting')));
-    }));
+    })));
 
     if (!hashesReady())
-      body.append(textButton(t('guide.open'), 'text', () => { closePanel(); openGuide(); }, 'open-guide'));
+      body.append(textButton(t('guide.open'), 'primary block', () => { closePanel(); openGuide(); }, 'open-guide'));
     if (capturedHashCount())
-      body.append(divider(), textButton(t('hashes.forget'), 'text danger', confirmForgetHashes, 'forget-hashes'));
-    body.append(divider(), sectionLabel(t('diag.section')), note(t('diag.note')),
-      textButton(t('diag.copy'), 'secondary', copyDiagnostics, 'diag-copy', 'copy'),
+      body.append(textButton(t('hashes.forget'), 'text danger', confirmForgetHashes, 'forget-hashes'));
+    body.append(sectionLabel(t('diag.section')), note(t('diag.note')),
+      textButton(t('diag.copy'), 'secondary block', copyDiagnostics, 'diag-copy', 'copy'),
       createElement('div', { 'data-rb-key': 'diag-slot' }));
   }
 
@@ -2321,21 +2322,16 @@
         createElement('dd', { text: t(`shortcuts.desc.${id}`) }),
       ]));
     panelBody.append(
-      toggleRow({
+      group(toggleRow({
         label: t('shortcuts.enable'), sub: t('shortcuts.enableSub'), checked: state.shortcutOn, key: 'toggle:shortcut',
         onChange: on => { state.shortcutOn = on; saveState(); list.classList.toggle('is-off', !on); },
-      }),
-      divider(), list, divider(),
+      })),
+      sectionLabel(t('shortcuts.builtIn')), group(list),
       sectionLabel(t('snippets.section')), note(t('snippets.note')),
-      ...state.snippets.map((snippet, index) => snippetRow(snippet, index, tokens)),
+      state.snippets.length ? group(...state.snippets.map((snippet, index) => snippetRow(snippet, index, tokens))) : null,
       state.snippets.length < SNIPPET_LIMIT
-        ? textButton(t('snippets.add'), 'text block', () => editSnippet(-1), 'snippet-add', 'plus')
-        : note(t('snippets.full', { count: SNIPPET_LIMIT })),
-      divider(),
-      textButton(t('shortcuts.rename'), 'text', () => {
-        textSearchText = ''; textUnchangedOnly = false; textScrollGroup = 'shortcuts';
-        setView('text', 1);
-      }, 'shortcuts-rename'));
+        ? textButton(t('snippets.add'), 'secondary block', () => editSnippet(-1), 'snippet-add', 'plus')
+        : note(t('snippets.full', { count: SNIPPET_LIMIT })));
   }
 
   function editSnippet(index) {
@@ -2415,159 +2411,6 @@
         textButton(t('common.cancel'), 'secondary', closeEditor, 'snippet-cancel'), save));
   }
 
-  /* ---- Language & text ---- */
-
-  const placeholdersIn = text => [...new Set(text.match(/\{\w+\}/g) || [])];
-
-  let textSaveTimer = null;
-  function saveTextSoon() {
-    clearTimeout(textSaveTimer);
-    textSaveTimer = setTimeout(() => { textSaveTimer = null; saveState(); refreshEntryLabels(); }, 300);
-  }
-  // don't lose the last keystrokes if the tab closes right after typing
-  window.addEventListener('pagehide', () => { if (textSaveTimer) { clearTimeout(textSaveTimer); textSaveTimer = null; saveState(); } });
-
-  function setTextOverride(key, value) {
-    if (typeof value !== 'string' || !value.trim() || value === builtInText(key)) delete state.lang.strings[key];
-    else state.lang.strings[key] = value.slice(0, MAX_TEXT_LENGTH);
-    saveTextSoon();
-  }
-
-  // Each field holds the text as it's shown now. Empty or unchanged means the built-in wording is used.
-  function textEntry(key, onChange) {
-    const original = builtInText(key);
-    const tokenSlot = key.startsWith('shortcut.') ? key.slice('shortcut.'.length) : null;
-    const multiline = original.length > 44;
-    const field = createElement(multiline ? 'textarea' : 'input', {
-      class: 'rb-input rb-text-field', type: multiline ? null : 'text',
-      rows: multiline ? String(Math.min(6, Math.ceil(original.length / 34))) : null,
-      placeholder: original, 'aria-label': original, 'data-rb-key': `text:${key}`,
-      dir: 'auto', spellcheck: tokenSlot ? 'false' : 'true', maxlength: String(MAX_TEXT_LENGTH),
-    });
-    field.value = rawText(key);
-
-    const originalText = createElement('span', { class: 'rb-text-original', dir: 'auto' });
-    const useOriginal = createElement('button', {
-      type: 'button', class: 'rb-text-revert', 'data-rb-key': `text-reset:${key}`, text: t('text.useOriginal'),
-      onclick: () => { field.value = original; update(); field.focus(); },
-    });
-    const originalRow = createElement('div', { class: 'rb-text-meta' }, originalText, useOriginal);
-    const hint = createElement('div', { class: 'rb-text-hint' });
-    const entry = createElement('div', { class: 'rb-text-entry', 'data-text-key': key }, field, originalRow, hint);
-
-    const placeholders = placeholdersIn(original);
-    const sync = () => {
-      const changed = key in state.lang.strings;
-      entry.classList.toggle('is-changed', changed);
-      originalRow.hidden = !changed;
-      if (changed) originalText.textContent = t('text.original', { text: original });
-      let hintText = '', warn = false;
-      if (tokenSlot) {
-        const typed = field.value.trim();
-        const used = shortcutTokens()[tokenSlot];
-        warn = !!typed && typed !== used;
-        hintText = warn ? t('text.badToken', { token: used }) : t('text.tokenHint');
-      } else if (placeholders.length) {
-        warn = !!field.value.trim() && placeholders.some(placeholder => !field.value.includes(placeholder));
-        hintText = t('text.keep', { placeholders: placeholders.join(' ') });
-      }
-      hint.textContent = hintText;
-      hint.hidden = !hintText;
-      hint.classList.toggle('is-warn', warn);
-    };
-    const update = () => {
-      setTextOverride(key, field.value);
-      if (tokenSlot) tokenEntrySyncs.forEach(resync => resync()); else sync();
-      onChange();
-    };
-    if (tokenSlot) tokenEntrySyncs.push(sync);
-    field.addEventListener('input', update);
-    sync();
-    return entry;
-  }
-
-  function renderText() {
-    panelHeader(t('text.title'), 'main');
-    const body = panelBody;
-    tokenEntrySyncs = [];
-
-    const summary = createElement('p', { class: 'rb-note', 'aria-live': 'polite' });
-    const updateSummary = () => {
-      summary.textContent = t('text.summary', { count: Object.keys(state.lang.strings).length, total: TEXT_KEYS.length });
-    };
-
-    const entries = [];
-    const groups = [];
-    const noMatch = createElement('div');
-    const applyFilter = () => {
-      const query = textSearchText.trim().toLowerCase();
-      let visible = 0;
-      for (const item of entries) {
-        const custom = state.lang.strings[item.key] || '';
-        const haystack = `${item.key}\n${DEFAULT_TEXT[item.key]}\n${builtInText(item.key)}\n${custom}`.toLowerCase();
-        const show = (!query || haystack.includes(query)) && (!textUnchangedOnly || !custom);
-        item.el.hidden = !show;
-        if (show) visible++;
-      }
-      for (const group of groups) group.el.hidden = group.items.every(item => item.el.hidden);
-      noMatch.replaceChildren(...(visible ? [] : [emptyState(t('text.noMatch', { query: textSearchText.trim() }))]));
-    };
-
-    const unchangedChip = createElement('button', {
-      type: 'button', class: 'rb-chip', 'aria-pressed': String(textUnchangedOnly), 'data-rb-key': 'text-unchanged',
-      text: t('text.unchangedOnly'),
-      onclick: () => { textUnchangedOnly = !textUnchangedOnly; unchangedChip.setAttribute('aria-pressed', String(textUnchangedOnly)); applyFilter(); },
-    });
-
-    panel.append(createElement('div', { class: 'rb-toolbar' },
-      searchField({ placeholder: t('text.search'), value: textSearchText, key: 'text-search',
-        onInput: value => { textSearchText = value; applyFilter(); } }),
-      createElement('div', { class: 'rb-toolbar-row' }, summary, unchangedChip)));
-
-    const nameInput = createElement('input', {
-      type: 'text', class: 'rb-input rb-input--short', placeholder: LANGUAGES[activeLanguage].name, 'aria-label': t('text.name'),
-      'data-rb-key': 'text-lang-name', maxlength: '40', dir: 'auto',
-    });
-    nameInput.value = state.lang.name;
-    nameInput.addEventListener('input', () => { state.lang.name = nameInput.value.trim().slice(0, 40); saveTextSoon(); });
-
-    const languageSelect = createElement('select', { class: 'rb-input', 'aria-label': t('text.base'), 'data-rb-key': 'text-base' },
-      createElement('option', { value: 'auto', text: t('text.auto', { language: LANGUAGES[pageLanguage()].name }) }),
-      Object.keys(LANGUAGES).map(code => createElement('option', { value: code, text: LANGUAGES[code].name })));
-    languageSelect.value = state.lang.base;
-    languageSelect.addEventListener('change', () => {
-      setBaseLanguage(languageSelect.value);
-      saveState(); refreshEntryLabels(); renderPanel();
-    });
-
-    body.append(
-      sectionLabel(t('text.section')),
-      createElement('div', { class: 'rb-field-stack' }, languageSelect),
-      toggleRow({
-        label: t('text.rtl'), sub: t('text.rtlSub'), checked: state.lang.dir === 'rtl', key: 'toggle:rtl',
-        onChange: on => { state.lang.dir = on ? 'rtl' : 'ltr'; saveState(); applyDirection(); },
-      }),
-      note(t('text.note')),
-      createElement('label', { class: 'rb-row rb-row--static rb-field-row' }, labelBlock(t('text.name')), nameInput),
-      createElement('div', { class: 'rb-footer' },
-        textButton(t('text.export'), 'secondary', exportText, 'text-export', null, t('text.exportTip')),
-        textButton(t('text.import'), 'secondary', () => pickJsonFile(importText, 'toast.textImportFailed'), 'text-import', null, t('text.importTip'))),
-      textButton(t('text.resetAll'), 'text danger', confirmResetText, 'text-reset-all'),
-      divider());
-
-    for (const group of TEXT_GROUPS) {
-      const items = Object.keys(group.strings).map(key => ({ key, el: textEntry(key, updateSummary) }));
-      entries.push(...items);
-      const el = createElement('section', { class: 'rb-text-group', 'data-text-group': group.id },
-        sectionLabel(t(`text.group.${group.id}`)), items.map(item => item.el));
-      groups.push({ el, items });
-      body.append(el);
-    }
-    body.append(noMatch);
-    updateSummary();
-    applyFilter();
-  }
-
   function renderConfirm() {
     const request = pendingConfirm;
     if (!request) { currentView = 'main'; renderMain(); return; }
@@ -2585,10 +2428,8 @@
   }
 
   /* =========================================================================
-   * Walkthrough
-   *   - the setup guide: a small card beside the chat that ticks off the three things Twitch has to be seen doing.
-   *     It sits outside the panel, because the panel opens right where Twitch's own chat menus do.
-   *   - the tour: a few pages inside the panel on what Rainbark can do, each with a jump to the real thing.
+   * Setup guide: a card beside the chat that ticks off the three things Twitch has to be seen doing.
+   * It sits outside the panel, because the panel opens right where Twitch's own chat menus do.
    * ========================================================================= */
 
   const GUIDE_WIDTH = 300;
@@ -2636,7 +2477,7 @@
 
   // Everything the card's contents depend on, so it's only rebuilt when one of them changes.
   const guideFacts = () => [HASH_KEYS.map(key => (state.hashes[key] ? 1 : 0)).join(''), viewerName() ? 1 : 0,
-    document.querySelector(TOOLBAR_ANCHOR) ? 1 : 0, activeLanguage, state.lang.dir].join('|');
+    document.querySelector(TOOLBAR_ANCHOR) ? 1 : 0, activeLanguage].join('|');
 
   function renderGuide() {
     if (!isGuideOpen()) return;
@@ -2659,7 +2500,7 @@
       parts.push(
         createElement('p', { class: 'rb-guide-text', text: t(fixing ? 'guide.fix.done.body' : 'guide.done.body') }),
         createElement('div', { class: 'rb-guide-actions' },
-          fixing ? null : guideButton(t('guide.tour'), 'primary', 'guide-tour', () => { closeGuide(); tourStep = 0; openPanel('tour'); }),
+          fixing ? null : guideButton(t('guide.openPanel'), 'primary', 'guide-panel', () => { closeGuide(); openPanel('main'); }),
           guideButton(t('common.close'), fixing ? 'primary' : '', 'guide-close', () => closeGuide())));
     } else {
       const current = guideKeys.find(key => !state.hashes[key]);
@@ -2682,7 +2523,6 @@
           guideButton(t('guide.later'), 'quiet', 'guide-later', () => closeGuide())));
     }
     guideCard.setAttribute('aria-labelledby', 'rb-guide-title');
-    guideCard.setAttribute('dir', state.lang.dir === 'rtl' ? 'rtl' : 'ltr');
     guideCard.classList.toggle('is-done', done);
     guideCard.replaceChildren(...parts.filter(Boolean));
     if (focusKey) { const again = guideCard.querySelector(`[data-rb-key="${focusKey}"]`) || guideCard.querySelector('button'); if (again) again.focus({ preventScroll: true }); }
@@ -2716,51 +2556,9 @@
     Object.assign(guideRing.style, { display: 'block', left: `${box.left - 3}px`, top: `${box.top - 3}px`, width: `${box.width + 6}px`, height: `${box.height + 6}px` });
   }
 
-  const TOUR_STEPS = [
-    { id: 'preview' },
-    { id: 'colors', view: 'wheel', label: 'nav.wheel' },
-    { id: 'badges', view: 'badges', label: 'nav.badges' },
-    { id: 'freeze', view: 'channels', label: 'nav.channels' },
-    { id: 'shortcuts', view: 'shortcuts', label: 'nav.shortcuts' },
-    { id: 'language', view: 'text', label: 'nav.text' },
-  ];
-  let tourStep = 0;
-  let tourVisit = null;   // the view opened from the tour, so its Back button returns here
-
-  function renderTour() {
-    tourVisit = null;
-    panelHeader(t('nav.tour'), 'main');
-    const body = panelBody;
-
-    if (!hashesReady()) body.append(setupCallout(t('setup.title'), t('guide.open'), 'open-guide'));
-
-    tourStep = Math.max(0, Math.min(TOUR_STEPS.length - 1, tourStep));
-    const step = TOUR_STEPS[tourStep];
-    const last = tourStep === TOUR_STEPS.length - 1;
-    const tokens = shortcutTokens();
-    const go = delta => { tourStep += delta; renderPanel(); };
-    const openButton = step.view
-      ? createElement('button', { type: 'button', class: 'rb-btn rb-btn--secondary rb-tour-open', 'data-rb-key': `nav:${step.view}`,
-          onclick: () => { tourVisit = step.view; setView(step.view, 1); } }, t(step.label), icon('forward'))
-      : null;
-    const backButton = textButton(t('common.back'), 'secondary', () => go(-1), 'tour-back');
-    backButton.disabled = tourStep === 0;
-
-    body.append(
-      createElement('div', { class: 'rb-tour', role: 'group', 'aria-label': t('common.count', { count: tourStep + 1, total: TOUR_STEPS.length }) },
-        pup('happy'),
-        createElement('div', { class: 'rb-tour-dots', 'aria-hidden': 'true' }, TOUR_STEPS.map((_, index) => createElement('span', { class: index === tourStep ? 'is-on' : null }))),
-        createElement('h3', { class: 'rb-tour-title', text: t(`tour.${step.id}.title`) }),
-        createElement('p', { class: 'rb-tour-body', text: t(`tour.${step.id}.body`, { help: tokens.help, color: tokens.color }) }),
-        openButton),
-      createElement('div', { class: 'rb-footer' },
-        backButton,
-        textButton(t(last ? 'tour.finish' : 'tour.next'), 'primary', () => { if (last) { tourStep = 0; setView('main', -1); } else go(1); }, 'tour-next')));
-  }
-
   const VIEWS = {
     main: renderMain, channels: renderChannels, timing: renderTiming, pronouns: renderPronouns, badges: renderBadges, arrange: renderArrange, wheel: renderWheel, palettes: renderPalettes,
-    shortcuts: renderShortcuts, snippet: renderSnippet, hashes: renderHashes, text: renderText, confirm: renderConfirm, tour: renderTour,
+    shortcuts: renderShortcuts, snippet: renderSnippet, hashes: renderHashes, settings: renderSettings, confirm: renderConfirm,
   };
 
   function accentGradient() {
@@ -2786,11 +2584,6 @@
     panel.dataset.view = currentView;
 
     panelBody.scrollTop = scrollTop;
-    if (currentView === 'text' && textScrollGroup) {
-      const group = panelBody.querySelector(`[data-text-group="${textScrollGroup}"]`);
-      if (group) panelBody.scrollTop = group.offsetTop - panelBody.offsetTop;
-    }
-    textScrollGroup = null;
     panel.classList.toggle('is-scrolled', panelBody.scrollTop > 0);
 
     if (hadFocus) {
@@ -2871,13 +2664,6 @@
     });
   }
 
-  function applyDirection() {
-    const dir = state.lang.dir === 'rtl' ? 'rtl' : 'ltr';
-    if (panel) panel.setAttribute('dir', dir);
-    if (toastHost) toastHost.setAttribute('dir', dir);
-    if (guideCard) guideCard.setAttribute('dir', dir);
-  }
-
   function setExpanded(expanded) {
     document.querySelectorAll('.rb-entry').forEach(button => button.setAttribute('aria-expanded', String(expanded)));
   }
@@ -2955,7 +2741,6 @@
     if (!toastHost || !toastHost.isConnected) {
       toastHost = createElement('div', { class: 'rb-toasts', role: 'status', 'aria-live': 'polite' });
       document.body.append(toastHost);
-      applyDirection();
     }
     const glyph = tone === 'error' ? icon('info') : pawIcon();
     const toast = createElement('div', { class: `rb-toast rb-toast--${tone}` }, glyph, message);
@@ -3026,7 +2811,6 @@
     injectStyles();
     panel = createElement('div', { id: 'rb-panel', role: 'dialog', 'aria-labelledby': 'rb-title', tabindex: '-1' });
     document.body.append(panel);
-    applyDirection();
     floatingButton = createElement('button', {
       id: 'rb-fab', class: 'rb-entry', type: 'button', title: entryTitle(),
       'aria-label': t('app.open'), 'aria-haspopup': 'dialog', 'aria-expanded': 'false', onclick: () => togglePanel(),
@@ -3131,7 +2915,7 @@
 
   const debugApi = window.__rainbark = {
     state: () => state, badges: () => ownedBadges, hashes: () => state.hashes, reloadBadges: loadBadges,
-    exportSettings, importJSON: importSettings, resetSettings, importText, text: t, channel: currentChannel,
+    exportSettings, importJSON: importSettings, resetSettings, text: t, channel: currentChannel,
   };
   log('loaded');
 })();
