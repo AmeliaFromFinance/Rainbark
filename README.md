@@ -71,13 +71,30 @@ Rainbark isn't made by or affiliated with Twitch or pr.alejo.io.
 
 **Chromium:** go to `chrome://extensions` → turn on **Developer mode** → **Load unpacked** → pick this folder.
 
-### Build the store zip
+### Scripts
+
+Run these from the project folder. On Windows, use Git Bash. You'll need Git 2.38+ and Node.js; releases also need the [GitHub CLI](https://cli.github.com).
+
+| Script | What it does |
+|---|---|
+| `scripts/test.sh` | Checks syntax, JSON, the manifest, text keys and versions. |
+| `scripts/package.sh` | Builds the store zip, `dist/rainbark-<version>.zip`. The same zip works for every store. |
+| `scripts/bundle.sh` | Zips the project as it is on GitHub, without anything in `.gitignore`. |
+| `scripts/commit.sh "Message"` | Runs the checks, then commits every change. |
+| `scripts/push.sh` | Checks for merge conflicts, catches up with GitHub if needed, runs the checks and pushes to `main`. |
+| `scripts/bump.sh patch` | Raises the version: `patch`, `minor`, `major` or an exact `1.2.3`. |
+| `scripts/release.sh` | Tags the version and creates a draft GitHub release with both zips attached. |
+| `scripts/publish.sh` | Publishes the draft release. |
+
+A typical release:
 
 ```sh
-./package.sh
+scripts/bump.sh minor
+scripts/commit.sh "Version 1.3.0"
+scripts/push.sh
+scripts/release.sh
+scripts/publish.sh
 ```
-
-Writes `dist/rainbark-<version>.zip` with only the files the extension needs. The same zip works for every store.
 
 ### Files
 
@@ -92,6 +109,7 @@ Writes `dist/rainbark-<version>.zip` with only the files the extension needs. Th
 | `bridge.js` | Syncs settings to extension storage and between tabs. |
 | `background.js` | Welcome page, toolbar button, keyboard shortcut and pronoun lookups (cached for an hour). |
 | `welcome.*` | The page that opens after install. |
+| `scripts/` | Test, package and release scripts. |
 | `_locales/` | Store description, shortcut name and welcome page text. |
 
 The website lives on the [`gh-pages`](../../tree/gh-pages) branch.
@@ -103,6 +121,6 @@ Settings are saved in Twitch's site storage, with a copy in extension storage. T
 - **Text:** `TEXT_GROUPS` and `LANGUAGES` in `languages.js`. Missing translations fall back to English.
 - **Look:** `STYLES` in `styles.js`.
 - **Palettes:** `PALETTE_GROUPS` in `page.js`, plus a name in `languages.js`.
-- **Version:** `version` in `manifest.json` and `VERSION` in `page.js`. Keep them equal and raise both for each store upload.
+- **Version:** run `scripts/bump.sh`. It updates `manifest.json` and `VERSION` in `page.js` together.
 
 Never change the Firefox add-on ID (`rainbark-for-twitch@ame.owo`). Firefox treats a new ID as a new add-on, so existing installs would stop updating.
