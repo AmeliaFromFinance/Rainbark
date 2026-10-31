@@ -14,39 +14,40 @@ Everything the Chrome Web Store, Firefox Add-ons and Edge Add-ons forms ask for,
 
 **Summary** (Chrome shows the manifest's 132-character description; Firefox's summary allows 250):
 
-> A new chat badge and name color with every Twitch message: rainbow, pastel, pride flags and more, plus pronouns and chat shortcuts.
+> A new badge and name color with every Twitch message. Rainbow, pastel and pride flag palettes, plus pronouns and chat shortcuts.
 
 **Description** (plain text; Edge needs at least 250 characters):
 
 ```
-Every message you send in Twitch chat gets a new global badge and a new name color.
+Every message you send in Twitch chat goes out with a new global badge and name color.
 
 COLORS
-- A rainbow wheel, pastel, sunset and other palettes, 36 pride flags, Twitch's 15 free colors, or your own list.
-- Each channel remembers where it is in the palette. Freeze a channel to keep one color there.
-- Go through the palette in order, or in random order.
+- Rainbow wheel, pastel, sunset and more, 36 pride flags, Twitch's 15 free colors, or your own.
+- Go through them in order or at random.
+- Each channel keeps its place. Freeze a channel to keep one color there.
 
 BADGES
-- Shuffled or in your own order. Switch badges off, star favorites so they come up more often, pin one badge to a channel, or give a channel its own set.
+- Shuffle or set your own order.
+- Turn badges off, star favorites, pin one to a channel, or give a channel its own set.
 
-AND MORE
-- How often: every message, every few messages, or at most once every so many seconds.
-- Pronouns from pr.alejo.io next to people's names, styled the way you like.
-- Chat shortcuts: type >color and it becomes your current hex code. Add your own snippets.
-- Alt+Shift+R opens the panel with quick Pause, Freeze and palette buttons.
-- Recent colors at a glance. Click one to copy its hex code.
-- Works in the creator dashboard's chat too.
+ALSO
+- Change every message, every few messages, or at most once every so many seconds.
+- See your next message, next color and recent colors. Click one to copy it.
+- Pronouns from pr.alejo.io next to names, styled your way.
+- Chat shortcuts: type >color to paste your hex code. Save your own snippets.
+- Alt+Shift+R opens the panel.
+- Works in the creator dashboard chat too.
 - English, Español, Français, Deutsch, Português, Русский and 日本語.
 
 GETTING STARTED
-Open any Twitch channel while signed in. A paw button appears below the chat box and a short setup card walks you through it: open Chat Identity, pick any badge, pick any color. Rainbark then reuses those same requests.
+Open any Twitch channel while signed in and click the paw under the chat box. A short setup card asks you to open Chat Identity and pick any badge and color, once. Rainbark then sends those same requests for you.
 
-Most palettes need Twitch Turbo or Prime, because Twitch only lets those accounts pick any color. The "Twitch free colors" palette works for everyone.
+Most palettes need Turbo or Prime, since Twitch only lets those accounts pick any color. "Twitch free colors" works for everyone.
 
 PRIVACY
-No servers, no analytics, no ads. Badge and color changes go to Twitch exactly as Twitch's own menus send them. With pronouns on, the usernames of people in chat are sent to the pronouns API at api.pronouns.alejo.io. Settings stay in your browser.
+No servers, no analytics, no ads. Changes go straight to Twitch, the same way its own menus send them. With pronouns on, usernames from chat are sent to api.pronouns.alejo.io. Settings stay in your browser.
 
-Rainbark isn't made by or affiliated with Twitch.
+Not made by or affiliated with Twitch.
 ```
 
 **Category:** pick the closest social or communication category in each store: for example Social Networking on Chrome, Social & Communication on Firefox, and Social on Edge. The lists change, so go by what each form offers.
