@@ -105,4 +105,4 @@ Settings are saved in Twitch's site storage, with a copy in extension storage. T
 - **Palettes:** `PALETTE_GROUPS` in `page.js`, plus a name in `languages.js`.
 - **Version:** `version` in `manifest.json` and `VERSION` in `page.js`. Keep them equal and raise both for each store upload.
 
-Never change the Firefox add-on ID (`rainbark@ame.owo`). Firefox treats a new ID as a new add-on, so existing installs would stop updating.
+Never change the Firefox add-on ID (`rainbark-for-twitch@ame.owo`). Firefox treats a new ID as a new add-on, so existing installs would stop updating.
