@@ -2,14 +2,15 @@
 
 A browser extension for Twitch chat. Every message you send gets a new global badge and a new name color.
 
-![Rainbark's panel beside Twitch chat](screenshot-1.png)
+![Rainbark's panel beside Twitch chat](store/screenshot-1.png)
 
 ## Install
 
 | Browser | Get it from |
 |---|---|
-| Firefox | [Firefox Add-ons](https://addons.mozilla.org/en-GB/firefox/addon/rainbark-for-twitch/) |
-| Chrome, Brave, Opera, Vivaldi, Arc | [Chrome Web Store](https://chromewebstore.google.com/detail/jlofkdgmbeleekkegkiflmildahmhgdd) |
+| Firefox | [Firefox Add-ons](FIREFOX_ADDONS_LINK) |
+| Chrome, Brave, Opera, Vivaldi, Arc | [Chrome Web Store](CHROME_WEB_STORE_LINK) |
+| Microsoft Edge | [Edge Add-ons](EDGE_ADDONS_LINK) |
 
 Needs Firefox 140+ or a Chromium browser 121+.
 
@@ -50,6 +51,29 @@ Rainbark has no servers, no analytics and no ads. Badge and color changes go to 
 
 Rainbark isn't made by or affiliated with Twitch or pr.alejo.io.
 
+## Install from source
+
+### Firefox
+
+1. Go to `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on…** and pick `manifest.json`.
+
+Firefox removes temporary add-ons when it restarts.
+
+### Chrome, Edge and other Chromium browsers
+
+1. Go to `chrome://extensions` (`edge://extensions` in Edge).
+2. Turn on **Developer mode**.
+3. Click **Load unpacked** and pick this folder.
+
+### Making the zip for the stores
+
+```sh
+./package.sh
+```
+
+This writes `dist/rainbark-<version>.zip` with only the files the extension needs (no `store/` images or Markdown). The same zip goes to all three stores.
+
 ## How it works
 
 | File | Job |
@@ -77,5 +101,5 @@ Rainbark isn't made by or affiliated with Twitch or pr.alejo.io.
 - **Palettes:** `PALETTE_GROUPS` in `page.js`. Each palette is a list of hex colors plus a name in `TEXT_GROUPS`.
 - **Welcome page, shortcut name and store description:** `_locales/<language>/messages.json`.
 - **Version:** `version` in `manifest.json` and `VERSION` in `page.js`. Keep them the same, and raise both for every store upload.
-# Rainbark
-A browser extension for Twitch chat. Every message you send gets a new global badge and a new name color.
+
+Keep the Firefox add-on ID (`rainbark@ame.owo` in `manifest.json`) the same forever: Firefox treats a new ID as a different add-on, so existing installs wouldn't update.

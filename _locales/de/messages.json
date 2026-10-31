@@ -1,0 +1,35 @@
+{
+  "extDescription": {
+    "message": "Neues Abzeichen, neue Namensfarbe pro Twitch-Nachricht: Regenbogen, Pastell, Pride-Flaggen und mehr, dazu Pronomen und Kürzel."
+  },
+  "actionTitle": {
+    "message": "Rainbark"
+  },
+  "welcomeTitle": {
+    "message": "Rainbark ist installiert"
+  },
+  "welcomeLead": {
+    "message": "Jede Nachricht, die du auf Twitch sendest, bekommt ein neues Abzeichen und eine neue Namensfarbe."
+  },
+  "welcomeStep1": {
+    "message": "Öffne angemeldet einen beliebigen Twitch-Kanal."
+  },
+  "welcomeStep2": {
+    "message": "Such unter dem Chat-Feld den Pfoten-Button, direkt neben dem Zahnrad für die Chat-Einstellungen."
+  },
+  "welcomeStep3": {
+    "message": "Von dort führt dich Rainbark durch die Einrichtung. Sie dauert nur eine Minute."
+  },
+  "welcomeOpen": {
+    "message": "Twitch öffnen"
+  },
+  "welcomeTip": {
+    "message": "Der Rainbark-Button in der Symbolleiste deines Browsers öffnet das Panel in jedem Twitch-Tab."
+  },
+  "welcomeUserscript": {
+    "message": "Du hast vorher das Rainbark-Userscript benutzt? Deine Einstellungen werden übernommen. Schalte das Userscript aus, damit nicht beide gleichzeitig laufen."
+  },
+  "commandOpen": {
+    "message": "Rainbark im aktuellen Twitch-Tab öffnen"
+  }
+}

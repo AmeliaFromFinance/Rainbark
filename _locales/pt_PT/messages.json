@@ -1,0 +1,35 @@
+{
+  "extDescription": {
+    "message": "Distintivo e cor de nome novos a cada mensagem na Twitch: arco-íris, pastel, bandeiras do orgulho e mais. Inclui pronomes e atalhos."
+  },
+  "actionTitle": {
+    "message": "Rainbark"
+  },
+  "welcomeTitle": {
+    "message": "O Rainbark foi instalado"
+  },
+  "welcomeLead": {
+    "message": "Cada mensagem que você envia na Twitch ganha um novo distintivo e uma nova cor de nome."
+  },
+  "welcomeStep1": {
+    "message": "Abra qualquer canal da Twitch depois de entrar na sua conta."
+  },
+  "welcomeStep2": {
+    "message": "Procure o botão da patinha abaixo da caixa de chat, ao lado da engrenagem das configurações do chat."
+  },
+  "welcomeStep3": {
+    "message": "A partir daí, o Rainbark guia você por uma configuração de um minuto."
+  },
+  "welcomeOpen": {
+    "message": "Abrir a Twitch"
+  },
+  "welcomeTip": {
+    "message": "O botão do Rainbark na barra de ferramentas do navegador abre o painel em qualquer aba da Twitch."
+  },
+  "welcomeUserscript": {
+    "message": "Já usava o userscript do Rainbark? Suas configurações são mantidas. Desative o userscript para que os dois não funcionem ao mesmo tempo."
+  },
+  "commandOpen": {
+    "message": "Abrir o Rainbark na aba atual da Twitch"
+  }
+}

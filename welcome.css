@@ -1,0 +1,61 @@
+/* Rainbark: welcome page. Follows Twitch's dark and light surfaces.
+ *
+ * Everything is sized in rem, so the whole card grows with the root font size below. That size follows the window:
+ * 16px on phones and small laptops, about 19px in a 1920×1080 window, about 24px at 2560×1440, and at most 28px.
+ * It follows the browser's own text size and zoom as well. */
+:root {
+  color-scheme: dark light;
+  --page: #0e0e10; --card: #18181b; --line: rgba(83, 83, 95, .48); --text: #efeff1; --muted: #adadb8;
+  --purple: #9147ff; --purple-hover: #772ce8;
+  font-size: clamp(1rem, .5vw + .5vh + .3rem, 1.75rem);
+  -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+}
+@media (prefers-color-scheme: light) {
+  :root { --page: #f7f7f8; --card: #ffffff; --line: rgba(0, 0, 0, .12); --text: #0e0e10; --muted: #53535f; }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+  padding: clamp(1rem, 5vh, 3rem) 1rem;
+  background: var(--page); color: var(--text); font: 1rem/1.6 Inter, Roobert, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+main {
+  position: relative; width: 100%; max-width: 34rem; padding: 2.75rem 2.5rem 2.25rem; overflow: hidden;
+  background: var(--card); border: 1px solid var(--line); border-radius: .75rem; text-align: center;
+}
+.accent { position: absolute; inset: 0 0 auto 0; height: max(4px, .3rem); background: linear-gradient(90deg, #ee2b2b, #f5a623, #5ad12b, #2ba8ee, #9147ff); }
+.paw { display: block; width: 4.75rem; height: 4.75rem; margin: 0 auto 1rem; }
+h1 { margin: 0 0 .4rem; font-size: 1.7rem; line-height: 1.25; text-wrap: balance; }
+.lead { margin: 0 0 1.6rem; font-size: 1.075rem; color: var(--muted); text-wrap: pretty; }
+ol { margin: 0 0 1.85rem; padding: 0; list-style: none; counter-reset: step; text-align: start; }
+li { counter-increment: step; display: flex; gap: .85rem; align-items: baseline; padding: .75rem 0; border-top: 1px solid var(--line); }
+li:last-child { border-bottom: 1px solid var(--line); }
+li::before {
+  content: counter(step); flex: none; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--purple); color: #fff;
+  font-size: .85rem; font-weight: 700; line-height: 1.6rem; text-align: center; transform: translateY(-.05rem);
+}
+.button {
+  display: inline-block; min-height: 44px; padding: .7rem 1.6rem; border-radius: .45rem;
+  background: var(--purple); color: #fff; font-size: 1.05rem; font-weight: 600; line-height: 1.4; text-decoration: none;
+}
+.button:hover { background: var(--purple-hover); }
+.button:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+.note { margin: 1.4rem 0 0; color: var(--muted); font-size: .875rem; text-wrap: pretty; }
+.note + .note { margin-top: .6rem; }
+
+/* Phones: less padding around the card so the text gets the room. */
+@media (max-width: 30rem) {
+  body { padding: 1rem .75rem; }
+  main { padding: 2rem 1.25rem 1.5rem; }
+  h1 { font-size: 1.5rem; }
+}
+/* Short windows, such as a 1366×768 laptop: tighter spacing so the card fits without scrolling. */
+@media (max-height: 48rem) {
+  body { padding-block: 1rem; }
+  main { padding-block: 1.75rem 1.25rem; }
+  .paw { width: 3.5rem; height: 3.5rem; margin-bottom: .75rem; }
+  .lead { margin-bottom: 1.2rem; }
+  ol { margin-bottom: 1.4rem; }
+  li { padding-block: .55rem; }
+  .note { margin-top: 1rem; }
+}

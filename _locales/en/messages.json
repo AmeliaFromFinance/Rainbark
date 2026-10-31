@@ -1,0 +1,35 @@
+{
+  "extDescription": {
+    "message": "A new chat badge and name color with every Twitch message: rainbow, pastel, pride flags and more, plus pronouns and chat shortcuts."
+  },
+  "actionTitle": {
+    "message": "Rainbark"
+  },
+  "welcomeTitle": {
+    "message": "Rainbark is installed"
+  },
+  "welcomeLead": {
+    "message": "Every message you send on Twitch gets a new badge and a new name color."
+  },
+  "welcomeStep1": {
+    "message": "Open any Twitch channel while signed in."
+  },
+  "welcomeStep2": {
+    "message": "Look for the paw button below the chat box, next to the chat settings gear."
+  },
+  "welcomeStep3": {
+    "message": "Rainbark walks you through a one-minute setup from there."
+  },
+  "welcomeOpen": {
+    "message": "Open Twitch"
+  },
+  "welcomeTip": {
+    "message": "The Rainbark button in your browser’s toolbar opens the panel on any Twitch tab."
+  },
+  "welcomeUserscript": {
+    "message": "Used the Rainbark userscript before? Your settings carry over. Turn the userscript off so the two don’t run at once."
+  },
+  "commandOpen": {
+    "message": "Open Rainbark on the Twitch tab you’re on"
+  }
+}

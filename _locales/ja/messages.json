@@ -1,0 +1,35 @@
+{
+  "extDescription": {
+    "message": "Twitchでメッセージを送るたびに、チャットバッジと名前の色が変わります。レインボー、パステル、プライドフラッグなど多数。代名詞の表示やチャットショートカットも使えます。"
+  },
+  "actionTitle": {
+    "message": "Rainbark"
+  },
+  "welcomeTitle": {
+    "message": "Rainbarkをインストールしました"
+  },
+  "welcomeLead": {
+    "message": "Twitchでメッセージを送るたびに、バッジと名前の色が新しくなります。"
+  },
+  "welcomeStep1": {
+    "message": "Twitchにログインした状態で、好きなチャンネルを開いてください。"
+  },
+  "welcomeStep2": {
+    "message": "チャット欄の下、チャットの設定の歯車の隣にある肉球ボタンを探してください。"
+  },
+  "welcomeStep3": {
+    "message": "あとはRainbarkが1分ほどのセットアップを案内します。"
+  },
+  "welcomeOpen": {
+    "message": "Twitchを開く"
+  },
+  "welcomeTip": {
+    "message": "ブラウザのツールバーにあるRainbarkボタンを押すと、Twitchのタブならどこでもパネルが開きます。"
+  },
+  "welcomeUserscript": {
+    "message": "以前Rainbarkのユーザースクリプトを使っていましたか？設定はそのまま引き継がれます。両方が同時に動かないよう、ユーザースクリプトはオフにしてください。"
+  },
+  "commandOpen": {
+    "message": "表示中のTwitchタブでRainbarkを開く"
+  }
+}

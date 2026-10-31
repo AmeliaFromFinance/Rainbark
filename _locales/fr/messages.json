@@ -1,0 +1,35 @@
+{
+  "extDescription": {
+    "message": "Nouveau badge et nouvelle couleur de nom à chaque message Twitch : arc-en-ciel, pastel, drapeaux LGBT+… Avec pronoms et raccourcis."
+  },
+  "actionTitle": {
+    "message": "Rainbark"
+  },
+  "welcomeTitle": {
+    "message": "Rainbark est installé"
+  },
+  "welcomeLead": {
+    "message": "Chaque message que tu envoies sur Twitch reçoit un nouveau badge et une nouvelle couleur de nom."
+  },
+  "welcomeStep1": {
+    "message": "Connecte-toi à Twitch et ouvre n’importe quelle chaîne."
+  },
+  "welcomeStep2": {
+    "message": "Repère le bouton en forme de patte sous la zone de saisie du chat, à côté de la roue dentée des paramètres du chat."
+  },
+  "welcomeStep3": {
+    "message": "De là, Rainbark te guide pour une configuration d’une minute."
+  },
+  "welcomeOpen": {
+    "message": "Ouvrir Twitch"
+  },
+  "welcomeTip": {
+    "message": "Le bouton Rainbark dans la barre d’outils de ton navigateur ouvre le panneau sur n’importe quel onglet Twitch."
+  },
+  "welcomeUserscript": {
+    "message": "Tu utilisais déjà le userscript Rainbark ? Tes paramètres sont repris. Désactive le userscript pour que les deux ne tournent pas en même temps."
+  },
+  "commandOpen": {
+    "message": "Ouvrir Rainbark dans l’onglet Twitch actuel"
+  }
+}

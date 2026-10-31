@@ -1,0 +1,83 @@
+{
+  "manifest_version": 3,
+  "name": "Rainbark",
+  "version": "7.1.2",
+  "description": "__MSG_extDescription__",
+  "default_locale": "en",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.pronouns.alejo.io/*"
+  ],
+  "action": {
+    "default_title": "__MSG_actionTitle__",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "commands": {
+    "open-panel": {
+      "suggested_key": {
+        "default": "Alt+Shift+R"
+      },
+      "description": "__MSG_commandOpen__"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.twitch.tv/*",
+        "https://dashboard.twitch.tv/*"
+      ],
+      "js": [
+        "languages.js",
+        "styles.js",
+        "pronoun-look.js",
+        "page.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://www.twitch.tv/*",
+        "https://dashboard.twitch.tv/*"
+      ],
+      "js": [
+        "bridge.js",
+        "pronouns.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "minimum_chrome_version": "121",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "rainbark@ame.owo",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "websiteContent",
+          "browsingActivity"
+        ]
+      }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
+    }
+  }
+}

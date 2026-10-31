@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbark</title>
+  <link rel="icon" href="icons/icon-32.png">
+  <link rel="stylesheet" href="welcome.css">
+</head>
+<body>
+  <main>
+    <div class="accent" aria-hidden="true"></div>
+    <!-- The same paw as the toolbar icon, drawn here so it stays sharp at any size. -->
+    <svg class="paw" viewBox="0 0 128 128" aria-hidden="true" focusable="false">
+      <rect width="128" height="128" rx="28" fill="#18181b"/>
+      <g transform="translate(19 17) scale(3.75)"><path fill="#EE2B2B" d="M12 11.1c-2.85 0-6.3 3.75-6.3 6.5 0 1.85 1.35 2.9 3 2.9 1.25 0 2.05-.55 3.3-.55s2.05.55 3.3.55c1.65 0 3-1.05 3-2.9 0-2.75-3.45-6.5-6.3-6.5Z"/><ellipse fill="#F5A623" cx="5.3" cy="10.9" rx="2.05" ry="2.55" transform="rotate(-22 5.3 10.9)"/><ellipse fill="#5AD12B" cx="9.3" cy="6.1" rx="2.15" ry="2.75" transform="rotate(-8 9.3 6.1)"/><ellipse fill="#2BA8EE" cx="14.7" cy="6.1" rx="2.15" ry="2.75" transform="rotate(8 14.7 6.1)"/><ellipse fill="#9147FF" cx="18.7" cy="10.9" rx="2.05" ry="2.55" transform="rotate(22 18.7 10.9)"/></g>
+    </svg>
+    <h1 data-msg="welcomeTitle">Rainbark is installed</h1>
+    <p class="lead" data-msg="welcomeLead">Every message you send on Twitch gets a new badge and a new name color.</p>
+    <ol>
+      <li data-msg="welcomeStep1">Open any Twitch channel while signed in.</li>
+      <li data-msg="welcomeStep2">Look for the paw button below the chat box, next to the chat settings gear.</li>
+      <li data-msg="welcomeStep3">Rainbark walks you through a one-minute setup from there.</li>
+    </ol>
+    <a class="button" href="https://www.twitch.tv/" data-msg="welcomeOpen">Open Twitch</a>
+    <p class="note" data-msg="welcomeTip">The Rainbark button in your browser’s toolbar opens the panel on any Twitch tab.</p>
+    <p class="note" data-msg="welcomeUserscript">Used the Rainbark userscript before? Your settings carry over. Turn the userscript off so the two don’t run at once.</p>
+  </main>
+  <script src="welcome.js"></script>
+</body>
+</html>
